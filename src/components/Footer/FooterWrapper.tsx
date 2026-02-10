@@ -1,0 +1,16 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import Footer from "./Footer";
+
+
+export default function FooterWrapper() {
+  const pathname = usePathname();
+
+  // Dashboard ilə başlayan bütün path-ları gizlət
+  const hideFooter = pathname.startsWith("/dashboard");
+
+  if (hideFooter) return null;
+
+  return <Footer />;
+}

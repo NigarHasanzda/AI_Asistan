@@ -4,7 +4,7 @@ const FirstSection = () => {
   return (
     <section className="relative w-full min-h-screen bg-[#F3F4F6] flex items-center justify-center px-5 py-14 md:px-12 lg:px-24 font-sans">
       
-      <div className="max-w-[1400px] w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <div className="max-w-[90%] w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
         
         {/* SOL TEXT */}
         <div className="flex flex-col space-y-6 text-center lg:text-left">
