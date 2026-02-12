@@ -7,7 +7,7 @@ export default function HeaderWrapper() {
   const pathname = usePathname();
 
   // Dashboard ilə başlayan bütün path-ları gizlət
-  const hideHeader = pathname.startsWith("/dashboard") || pathname === "/login" || pathname === "/register" || pathname.startsWith("/register/") || pathname.startsWith("/login/"); 
+  const hideHeader = pathname.startsWith("/dashboard") || pathname === "/login" || pathname === "/register" || pathname.startsWith("/register/") || pathname.startsWith("/login/")|| pathname.startsWith("/userdashboard") || pathname.startsWith("/userdashboard/") ; 
 
   if (hideHeader) return null;
 

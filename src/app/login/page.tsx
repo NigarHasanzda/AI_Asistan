@@ -6,9 +6,8 @@ import { Eye } from 'lucide-react';
 
 export default function LoginPage() {
   return (
-<div className="min-h-screen px-[100px] flex bg-[linear-gradient(90deg,#D1DCFF_0%,#FFFFFF_50%)] font-sans">   {/* Sol Hissə - Branding */}
+<div className="min-h-screen px-[100px] flex bg-[linear-gradient(90deg,#D1DCFF_0%,#FFFFFF_50%)] font-sans">  
       <div className="hidden lg:flex lg:w-[45%]  p-16 flex-col justify-between relative overflow-hidden">
-        {/* Dekorativ Gradient Blur */}
         <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px]  rounded-full blur-[120px] opacity-50" />
         
         <div className="relative z-10 flex items-center gap-2">
@@ -39,7 +38,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Sağ Hissə - Form */}
+
       <div className="flex-1 flex flex-col items-center justify-center p-8 bg-[#F8F9FB] lg:bg-white">
         <div className="w-full max-w-[420px]">
           <div className="text-center mb-10">
