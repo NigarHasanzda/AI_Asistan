@@ -7,9 +7,7 @@ import Footer from "./Footer";
 export default function FooterWrapper() {
   const pathname = usePathname();
 
-  // Dashboard ilə başlayan bütün path-ları gizlət
-  const hideFooter = pathname.startsWith("/dashboard");
-
+  const hideFooter = pathname.startsWith("/dashboard") || pathname === "/login" || pathname === "/register" || pathname.startsWith("/register/") || pathname.startsWith("/login/");
   if (hideFooter) return null;
 
   return <Footer />;
