@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { Search, MapPin, Building2, Banknote, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-interface Internship {
+export interface Internship {
   id: number;
   role: string;
   company: string;
@@ -13,13 +13,89 @@ interface Internship {
   aiMatch: number;
   logo: string;
   category: string;
+  duration: string;
+  postedAt: string;
+  technicalScore: number;
+  behavioralScore: number;
+  applicantCount: number;
+  tags: string[];
+  requirements: {
+    technical: string[];
+    soft: string[];
+  };
+  aboutRole: string;
+  aboutCompany: string;
 }
 
-const internships: Internship[] = [
-  { id: 1, role: 'Backend Intern', company: 'TechFlow', location: 'Remote', salary: '$3,500 /mo', aiMatch: 98, logo: 'TF', category: 'Engineering' },
-  { id: 2, role: 'Product Design Intern', company: 'Creatively', location: 'New York, NY', salary: '$4,200 /mo', aiMatch: 92, logo: 'C', category: 'Design' },
-  { id: 3, role: 'Fullstack Engineering Intern', company: 'Notion', location: 'San Francisco', salary: '$5,000 /mo', aiMatch: 85, logo: 'N', category: 'Engineering' },
-  { id: 4, role: 'UI/UX Design Intern', company: 'Figma', location: 'Remote', salary: 'Unpaid', aiMatch: 78, logo: 'F', category: 'Design' },
+export const internships: Internship[] = [
+  {
+    id: 1,
+    role: 'Data Science Intern',
+    company: 'Kord AI',
+    location: 'San Francisco, CA (Remote)',
+    salary: '$4,500 - $6,000 /mo',
+    aiMatch: 85,
+    logo: 'K',
+    category: 'Engineering',
+    duration: '12 Weeks • Summer 2024',
+    postedAt: '2 days ago',
+    technicalScore: 90,
+    behavioralScore: 80,
+    applicantCount: 45,
+    tags: ['Series B', '150+ Employees', 'AI & Recruitment'],
+    aboutRole: "As a Data Science Intern at Kord AI, you will work at the intersection of recruitment and artificial intelligence. You'll help build the algorithms that match talent with opportunity, working directly on our core matching engine.",
+    aboutCompany: "Kord AI is on a mission to revolutionize how people find work. By leveraging cutting-edge LLMs and behavioral science, we're building a platform that removes bias.",
+    requirements: {
+      technical: [
+        "Proficiency in Python (Pandas, Scikit-learn, PyTorch/TensorFlow)",
+        "Strong SQL skills and experience with large datasets",
+        "Understanding of NLP and Recommendation Systems"
+      ],
+      soft: [
+        "Curiosity and a 'ship-fast' mentality",
+        "Strong communication skills for complex data findings",
+        "Current enrollment in BS/MS/PhD in a quantitative field"
+      ]
+    }
+  },
+  {
+    id: 2,
+    role: 'Backend Intern',
+    company: 'TechFlow',
+    location: 'Remote',
+    salary: '$3,500 /mo',
+    aiMatch: 98,
+    logo: 'TF',
+    category: 'Engineering',
+    duration: '10 Weeks',
+    postedAt: '1 day ago',
+    technicalScore: 95,
+    behavioralScore: 92,
+    applicantCount: 12,
+    tags: ['Startup', 'Remote First'],
+    aboutRole: "Scaling backend infrastructure using Go and Kubernetes.",
+    aboutCompany: "TechFlow is a fintech leader.",
+    requirements: { technical: ["Go", "SQL"], soft: ["Fast learner"] }
+  },
+  {
+    id: 3,
+    role: 'Product Design Intern',
+    company: 'Creatively',
+    location: 'New York, NY',
+    salary: '$4,200 /mo',
+    aiMatch: 92,
+    logo: 'C',
+    category: 'Design',
+    duration: '16 Weeks',
+    postedAt: '3 days ago',
+    technicalScore: 88,
+    behavioralScore: 95,
+    applicantCount: 88,
+    tags: ['Creative Agency'],
+    aboutRole: "Design user-centric interfaces for global brands.",
+    aboutCompany: "Leading design studio based in NY.",
+    requirements: { technical: ["Figma", "Prototyping"], soft: ["Visual storytelling"] }
+  }
 ];
 
 const InternshipHub = () => {
