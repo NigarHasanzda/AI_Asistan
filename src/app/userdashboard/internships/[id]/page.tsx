@@ -10,7 +10,7 @@ interface Internship {
   location: string;
   salary: string;
   aiMatch: number;
-  logo: string; // Şəkildəki kimi loqo/avatar üçün
+  logo: string;
   category: string;
   duration: string;
   postedAt: string;
@@ -135,85 +135,7 @@ export default function InternshipDetail() {
             </div>
           </div>
 
-          {/* SAĞ TƏRƏF (KART) */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-8 flex flex-col items-center">
-              
-              {/* Şəkildəki Dairəvi Match Score */}
-              <div className="relative flex items-center justify-center mb-6">
-                <svg className="w-32 h-32 transform -rotate-90">
-                  <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100" />
-                  <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" 
-                    strokeDasharray={364.4}
-                    strokeDashoffset={364.4 - (364.4 * data.aiMatch) / 100}
-                    className="text-blue-600" strokeLinecap="round" />
-                </svg>
-                <div className="absolute flex flex-col items-center">
-                  <span className="text-3xl font-extrabold">{data.aiMatch}%</span>
-                  <span className="text-[10px] font-bold uppercase text-slate-400 tracking-tighter">Match</span>
-                </div>
-              </div>
 
-              <div className="text-center mb-8">
-                <h3 className="text-lg font-bold">High Match</h3>
-                <p className="text-sm text-slate-400">Your profile is a strong fit for this internship.</p>
-              </div>
-
-              {/* Tərəqqi Çubuqları */}
-              <div className="w-full space-y-5 mb-8">
-                <div>
-                  <div className="flex justify-between text-xs font-bold mb-1.5 uppercase tracking-wide">
-                    <span className="text-slate-500">Technical Score</span>
-                    <span>{data.technicalScore}%</span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                    <div className="bg-blue-600 h-full transition-all duration-500" style={{ width: `${data.technicalScore}%` }} />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-xs font-bold mb-1.5 uppercase tracking-wide">
-                    <span className="text-slate-500">Behavioral Score</span>
-                    <span>{data.behavioralScore}%</span>
-                  </div>
-                  <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                    <div className="bg-blue-400 h-full transition-all duration-500" style={{ width: `${data.behavioralScore}%` }} />
-                  </div>
-                </div>
-              </div>
-
-              <button className="w-full py-4 bg-[#2563eb] text-white rounded-lg font-bold text-sm mb-3 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100">
-                Apply Now →
-              </button>
-
-              <button className="w-full py-4 border-2 border-slate-100 text-slate-700 rounded-lg font-bold text-sm hover:bg-slate-50 transition-colors">
-                Practice for this Role
-              </button>
-              
-              <p className="mt-4 text-[10px] uppercase font-bold text-slate-300 tracking-widest text-center">
-                Recommended by Kord AI Engine
-              </p>
-            </div>
-
-            {/* QUICK INFO KARTI */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-4">
-              <h4 className="font-bold text-sm mb-4">Quick Info</h4>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 text-slate-600 text-sm">
-                  <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><Users size={16}/></div>
-                  <span className="font-medium">{data.applicantCount} Applicants</span>
-                </div>
-                <div className="flex items-center gap-3 text-slate-600 text-sm">
-                  <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><Clock size={16}/></div>
-                  <span className="font-medium">Posted {data.postedAt}</span>
-                </div>
-                <div className="flex items-center gap-3 text-slate-600 text-sm">
-                  <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400"><Building2 size={16}/></div>
-                  <span className="font-medium">Full-time Internship</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
         </div>
       </div>
     </div>
