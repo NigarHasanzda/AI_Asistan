@@ -1,9 +1,8 @@
 import React from 'react'
+import PostInternshipForm from '../components/_post/PostPage'
 
 const page = () => {
-  return (
-    <div>page</div>
-  )
+  return <PostInternshipForm/>
 }
 
 export default page

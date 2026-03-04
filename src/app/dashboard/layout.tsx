@@ -25,9 +25,9 @@ export default function RootLayout({
         <Sidebar />
         
         {/* Kontent sahəsi sidebarın eni qədər (280px) soldan boşluq buraxmalıdır */}
-        <div className="flex-grow ml-[280px]">
+        <div className=" flex-grow ml-[290px]">
           <HeaderWrapper />
-          <main className="p-8">
+          <main className="p-7" >
             {children}
           </main>
           <FooterWrapper />
