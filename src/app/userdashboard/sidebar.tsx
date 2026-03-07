@@ -18,7 +18,7 @@ import Person2Icon from '@mui/icons-material/Person2';
 
 const menuItems = [
   { name: "Dashboard", icon: <LayoutDashboard size={23} />, path: "/userdashboard" },
-  { name: "AI Mentor", icon: <PsychologyIcon sx={{fontSize: 23}} />, path: "/userdashboard/ai-mentor" },
+  // { name: "AI Mentor", icon: <PsychologyIcon sx={{fontSize: 23}} />, path: "/userdashboard/ai-mentor" },
   { name: "Mock Interview", icon: <RecordVoiceOverIcon sx={{fontSize: 23}}  />, path: "/userdashboard/interviews" },
   { name: "Internship Hub", icon: <BusinessCenterIcon sx={{fontSize: 23}} />, path: "/userdashboard/internships" },
   { name: "Profile", icon: <Person2Icon sx={{fontSize: 23}} />, path: "/userdashboard/profile" },

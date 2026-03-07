@@ -186,25 +186,7 @@ const NewInterview = () => {
               </div>
             </section>
 
-            <section>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">
-                3. Target Role
-              </h3>
-
-              <div className="relative">
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="w-full appearance-none bg-white border border-gray-100 rounded-2xl px-6 py-4 text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 cursor-pointer shadow-sm"
-                >
-                  <option>Python Software Engineer</option>
-                  <option>Frontend Developer</option>
-                  <option>Data Scientist</option>
-                </select>
-
-                <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-              </div>
-            </section>
+           
           </div>
 
           {/* Launch */}
