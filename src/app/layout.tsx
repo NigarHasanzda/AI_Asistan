@@ -4,6 +4,7 @@ import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import HeaderWrapper from "@/components/Header/HeaderWrapper";
 import FooterWrapper from "@/components/Footer/FooterWrapper";
+import ClientOnly from "@/ClientOnly/ClientOnly";
 
 
 export const metadata: Metadata = {
@@ -17,12 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+<ClientOnly>
+      <html lang="en">
       <body>
         <HeaderWrapper/>
         {children}
         <FooterWrapper/>
       </body>
     </html>
+</ClientOnly>
   );
 }

@@ -1,16 +1,23 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const CTASection = () => {
   const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token); // token varsa true, yoxsa false
+  }, []);
+
+  // Əgər user login-disə, component render olunmasın
+  if (isLoggedIn) return null;
 
   return (
     <section className="w-full py-20 px-4 bg-[#F9FAFB]">
       <div className="max-w-[90%] mx-auto">
-
         <div className="bg-[#1D4ED8] rounded-[40px] py-16 px-6 md:px-12 text-center shadow-xl">
-
           <h2 className="text-white text-[32px] md:text-[42px] font-bold mb-6 tracking-tight">
             Ready to scale your future?
           </h2>
@@ -20,7 +27,6 @@ const CTASection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-
             {/* Login */}
             <button
               onClick={() => router.push('/login')}
@@ -36,9 +42,7 @@ const CTASection = () => {
             >
               Register
             </button>
-
           </div>
-
         </div>
       </div>
     </section>

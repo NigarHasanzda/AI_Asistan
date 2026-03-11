@@ -21,21 +21,15 @@ export interface CreateProfileRequest {
   targetJobId: number;
 }
 
-// Response tipi
 export interface CreateProfileResponse {
-  success: boolean;
-  message: string;
-  data?: {
-    id: number;
-    fullname: string;
-    targetJobId: number;
-    userId: number;
-  };
+  id: number;
+  fullname: string;
+  targetJobId: number;
 }
 
 
 export type CreateSkillRequest = {
-  skillNames: string;
+  skillName: string;
 };
 
 // Response tipi

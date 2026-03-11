@@ -1,8 +1,7 @@
-"use client";
-
+'use client';
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -16,33 +15,40 @@ const navLinks = [
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const pathname = usePathname();
+  const router = useRouter();
 
-  // Scroll detection
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Close mobile menu on route change
+  useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
+    document.body.style.overflow = open ? "hidden" : "unset";
+    return () => { document.body.style.overflow = "unset"; };
   }, [open]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const storedRole = localStorage.getItem("role");
+    setIsLoggedIn(!!token);
+    setRole(storedRole);
+  }, []);
+
+  const goToDashboard = () => {
+    if (!role) {
+      router.push("/login");
+      return;
+    }
+    if (role === "admin") router.push("/admin/dashboard");
+    else if (role === "Student") router.push("/userdashboard");
+    else if (role === "employer") router.push("/empdashboard");
+  };
+
+  if (isLoggedIn === null) return null;
 
   return (
     <>
@@ -55,18 +61,12 @@ export default function Header() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link
-              href="/"
-              className="flex items-center space-x-2 group"
-              aria-label="KordAi Home"
-            >
+            <Link href="/" className="flex items-center space-x-2 group">
               <span className="text-2xl font-bold tracking-tight text-gray-900 transition-transform group-hover:scale-105">
                 Kord<span className="text-blue-600">Ai</span>
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -84,14 +84,24 @@ export default function Header() {
                   </Link>
                 );
               })}
-
-              
             </nav>
-            <button className="hidden md:inline-flex ml-4 px-6 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md">
-  Get Started
-</button>
 
-            {/* Mobile Menu Button */}
+            {isLoggedIn ? (
+              <button
+                onClick={goToDashboard}
+                className="hidden md:inline-flex ml-4 px-6 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                Dashboard
+              </button>
+            ) : (
+              <button
+                onClick={() => router.push("/login")}
+                className="hidden md:inline-flex ml-4 px-6 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                Get Started
+              </button>
+            )}
+
             <button
               onClick={() => setOpen(!open)}
               className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
@@ -104,7 +114,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
       {open && (
         <div
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden"
@@ -113,7 +122,6 @@ export default function Header() {
         />
       )}
 
-      {/* Mobile Menu */}
       <div
         className={`fixed top-16 left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-40 md:hidden transition-all duration-300 ${
           open
@@ -140,14 +148,25 @@ export default function Header() {
           })}
 
           <div className="pt-4">
-            <button className="w-full px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 active:scale-95 transition-all duration-200 shadow-sm">
-              Get Started
-            </button>
+            {isLoggedIn ? (
+              <button
+                onClick={goToDashboard}
+                className="w-full px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 active:scale-95 transition-all duration-200 shadow-sm"
+              >
+                Dashboard
+              </button>
+            ) : (
+              <button
+                onClick={() => router.push("/login")}
+                className="w-full px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 active:scale-95 transition-all duration-200 shadow-sm"
+              >
+                Get Started
+              </button>
+            )}
           </div>
         </nav>
       </div>
 
-      {/* Spacer for fixed header */}
       <div className="h-16" />
     </>
   );

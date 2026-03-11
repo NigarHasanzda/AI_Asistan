@@ -5,7 +5,8 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string; // və ya serverdən gələn digər məlumatlar
+  token: string;         // Serverdən gələn token
+  role: number;          // 0 = admin, 1 = student, 2 = employer
   userId?: string;
   username?: string;
   email?: string;

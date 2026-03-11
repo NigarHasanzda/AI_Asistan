@@ -15,26 +15,36 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
 
-    const loginData: LoginRequest = {
-      usernameOrEmail: email,
-      password: password,
-    };
+  try {
+    const res = await UserLogin({ usernameOrEmail: email, password });
 
-    try {
-      await UserLogin(loginData);
-      // Login uğurlu olduqda, home page yönləndir
-      router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    const role = res.role;
+
+    switch (role) {
+      case 0:
+        router.push("/admin/dashboard"); // admin
+        break;
+      case 1:
+        router.push("/dashboard");       // student
+        break;
+      case 2:
+        router.push("/empdashboard");    
+        break;
+      default:
+        router.push("/");
     }
-  };
+
+  } catch (err: any) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen px-[100px] flex bg-[linear-gradient(90deg,#D1DCFF_0%,#FFFFFF_50%)] font-sans">
