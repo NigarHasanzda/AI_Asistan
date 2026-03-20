@@ -1,9 +1,8 @@
 import React from 'react'
+import CreateCompany from './CreateCompany'
 
 const page = () => {
-  return (
-    <div>page</div>
-  )
+  return <CreateCompany/>
 }
 
 export default page
