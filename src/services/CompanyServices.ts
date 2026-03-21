@@ -19,7 +19,6 @@ export const createCompany = async (
 };
 
 
-
 export const uploadCompanyPhoto = async (
   file: File,
   token: string
