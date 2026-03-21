@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex min-h-fit bg-[#F8FAFC]">
+      <body className="flex min-h-fit bg-[#F8FAFC]" suppressHydrationWarning={true}>
         {/* Sidebar bura əlavə olunur */}
         <Sidebar />
         
