@@ -4,52 +4,51 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { LoginRequest } from "@/types/login";
 import { UserLogin } from "@/services/Login";
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = useState(""); // Burada email + username
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  try {
-    const res = await UserLogin({ usernameOrEmail: email, password });
+    try {
+      const res = await UserLogin({ usernameOrEmail, password });
 
-    const role = res.role;
+      const role = res.role;
 
-    switch (role) {
-      case 0:
-        router.push("/admin/dashboard"); // admin
-        break;
-      case 1:
-        router.push("/dashboard");       // student
-        break;
-      case 2:
-        router.push("/empdashboard");    
-        break;
-      default:
-        router.push("/");
+      switch (role) {
+        case 0:
+          router.push("/admin/dashboard"); // admin
+          break;
+        case 1:
+          router.push("/dashboard");       // student
+          break;
+        case 2:
+          router.push("/empdashboard");    // employer
+          break;
+        default:
+          router.push("/");
+      }
+
+    } catch (err: any) {
+      setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
-
-  } catch (err: any) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen px-[100px] flex bg-[linear-gradient(90deg,#D1DCFF_0%,#FFFFFF_50%)] font-sans">
       {/* Sol info panel */}
-      <div className="hidden lg:flex lg:w-[45%]  p-16 flex-col justify-between relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[45%] p-16 flex-col justify-between relative overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px]  rounded-full blur-[120px] opacity-50" />
         <div className="relative z-10 flex items-center gap-2">
           <div className="w-8 h-8 bg-[#3D13FF] rotate-45 flex items-center justify-center rounded-[4px]">
@@ -102,12 +101,12 @@ const handleSubmit = async (e: React.FormEvent) => {
               {error && <p className="text-red-500 text-sm">{error}</p>}
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-[#1E293B]">Email Address</label>
+                <label className="text-sm font-semibold text-[#1E293B]">Username or Email</label>
                 <input
-                  type="email"
-                  placeholder="name@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  placeholder="username or name@company.com"
+                  value={usernameOrEmail}
+                  onChange={(e) => setUsernameOrEmail(e.target.value)}
                   className="w-full px-4 py-3.5 rounded-xl border border-[#E2E8F0] focus:border-[#3D13FF] focus:ring-4 focus:ring-blue-50 outline-none transition-all placeholder:text-[#94A3B8]"
                   required
                 />
@@ -138,26 +137,6 @@ const handleSubmit = async (e: React.FormEvent) => {
               >
                 {loading ? "Signing in..." : "Sign In"}
               </button>
-
-              {/* Or continue with */}
-              <div className="relative flex items-center py-4">
-                <div className="flex-grow border-t border-[#E2E8F0]"></div>
-                <span className="mx-4 text-[11px] text-[#94A3B8] font-bold uppercase tracking-wider whitespace-nowrap">
-                  Or continue with
-                </span>
-                <div className="flex-grow border-t border-[#E2E8F0]"></div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <button type="button" className="flex items-center justify-center gap-2 py-3 border border-[#E2E8F0] rounded-xl hover:bg-gray-50 transition-all font-bold text-sm text-[#1E293B]">
-                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="google" />
-                  Google
-                </button>
-                <button type="button" className="flex items-center justify-center gap-2 py-3 border border-[#E2E8F0] rounded-xl hover:bg-gray-50 transition-all font-bold text-sm text-[#1E293B]">
-                  <img src="https://www.svgrepo.com/show/448234/linkedin.svg" className="w-5 h-5" alt="linkedin" />
-                  LinkedIn
-                </button>
-              </div>
             </form>
 
             <div className="mt-8 text-center text-sm text-[#64748B]">

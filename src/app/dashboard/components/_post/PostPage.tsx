@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
+import { createInternship } from "@/services/InternshipServices";
 
 export default function PostInternshipForm() {
   const [title, setTitle] = useState("");
@@ -13,40 +14,31 @@ export default function PostInternshipForm() {
   const [departmentId, setDepartmentId] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
+  try {
     const payload = {
-      title,
-      description,
+      title: title.trim(),
+      description: description.trim(),
       isPaid,
       locationType,
       startDate: new Date(startDate).toISOString(),
       endDate: new Date(endDate).toISOString(),
       deadlineDate: new Date(deadlineDate).toISOString(),
-      departmentId
+      departmentId,
+      skillIds: [1] // ❗ MÜTLƏQ olmalıdır
     };
 
-    try {
-      const res = await axios.post(
-        "https://khalida06-001-site1.ntempurl.com/api/Internships",
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // token varsa
-          },
-        }
-      );
-      console.log("Internship yaradıldı:", res.data);
-      alert("Internship uğurla yaradıldı!");
-    } catch (error: any) {
-      console.error("FULL ERROR:", error);
-      if (error.response?.data) {
-        console.log("BACKEND ERRORS:", error.response.data.errors);
-      }
-      alert("Xəta baş verdi. Konsola baxın.");
-    }
-  };
+    console.log("PAYLOAD:", payload);
+
+    await createInternship(payload);
+
+    alert("Uğurla yaradıldı!");
+  } catch (error: any) {
+    console.error("FULL ERROR:", error);
+    console.error("BACKEND:", error.response?.data);
+  }
+};
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md">

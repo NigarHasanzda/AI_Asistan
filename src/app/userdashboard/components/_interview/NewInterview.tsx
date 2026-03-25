@@ -1,210 +1,202 @@
 "use client";
 
 import React, { useState } from "react";
+import api from "@/libs/api";
 import { useRouter } from "next/navigation";
-import {
-  ChevronLeft,
-  Settings,
-  Code2,
-  Users2,
-  Layers,
-  Play,
-  Info,
-  ChevronDown,
+import { 
+  Code2, 
+  Users2, 
+  Layers, 
+  Sparkles, 
+  Zap, 
+  ArrowRight,
+  ShieldCheck,
+  Cpu
 } from "lucide-react";
 
 const NewInterview = () => {
   const router = useRouter();
 
-  const [mode, setMode] = useState("Technical");
-  const [difficulty, setDifficulty] = useState("Junior");
-  const [role, setRole] = useState("Python Software Engineer");
+  const [mode, setMode] = useState<"Technical" | "Behavioral" | "Mixed">("Technical");
+  const [difficulty, setDifficulty] = useState<"Intern" | "Junior" | "Senior">("Junior");
+  const [loading, setLoading] = useState(false);
 
   const modes = [
     {
       id: "Technical",
       icon: Code2,
       title: "Technical",
-      desc: "Data structures, algorithms, and system design questions.",
+      desc: "Deep dive into Algorithms, Data Structures and System Architecture.",
       color: "text-blue-600",
       bg: "bg-blue-50",
+      ring: "ring-blue-100",
     },
     {
       id: "Behavioral",
       icon: Users2,
       title: "Behavioral",
-      desc: "Soft skills, past experiences, and cultural fit scenarios.",
+      desc: "Focus on Leadership, Soft Skills and Cultural Adaptability.",
       color: "text-orange-600",
       bg: "bg-orange-50",
+      ring: "ring-orange-100",
     },
     {
       id: "Mixed",
       icon: Layers,
-      title: "Mixed Simulation",
-      desc: "A balanced mix of technical challenges and behavioral prompts.",
-      color: "text-purple-600",
-      bg: "bg-purple-50",
+      title: "Mixed Mode",
+      desc: "A comprehensive 360° simulation covering all aspects.",
+      color: "text-indigo-600",
+      bg: "bg-indigo-50",
+      ring: "ring-indigo-100",
     },
   ];
 
-  const handleLaunch = () => {
-    let path = "/";
+  const handleLaunch = async () => {
+    setLoading(true);
 
-    if (mode === "Technical") path = "interviews/technical";
-    if (mode === "Behavioral") path = "interviews/behavioral";
-    if (mode === "Mixed") path = "interviews/mixed";
+    const modeMap: Record<string, number> = { Behavioral: 0, Technical: 1, Mixed: 2 };
+    const levelMap: Record<string, number> = { Intern: 0, Junior: 1, Senior: 2 };
 
-    const query = `?level=${difficulty}&role=${encodeURIComponent(role)}`;
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.post(
+        "/MockInterviews",
+        { 
+          mode: modeMap[mode], 
+          level: levelMap[difficulty], 
+          role: "General Software Engineer" // Role-u avtomatik təyin edirik
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    router.push(path );
+      if (response.data) {
+        router.push(`/userdashboard/interviews/${response.data}`);
+      }
+    } catch (error) {
+      console.error("Launch error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="flex h-screen bg-white font-sans antialiased">
-      {/* LEFT SIDEBAR */}
-      <aside className="w-64 border-r border-gray-100 flex flex-col p-6">
-        <div className="flex-1">
-          <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-6">
-            Recent Performance
-          </h3>
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 lg:p-2">
+      
+      {/* Subtle Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-15%] right-[-5%] w-[45%] h-[45%] bg-indigo-50/50 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-15%] left-[-5%] w-[45%] h-[45%] bg-blue-50/50 rounded-full blur-[120px]" />
+      </div>
 
-          <div className="space-y-4">
-            {[
-              {
-                label: "Python Jr. Dev",
-                date: "Feb 5",
-                score: "82%",
-                color: "bg-green-100 text-green-700",
-              },
-              {
-                label: "Behavioral Check",
-                date: "Feb 2",
-                score: "74%",
-                color: "bg-orange-100 text-orange-700",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between group cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-500">
-                    <Code2 size={18} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-800">
-                      {item.label}
-                    </p>
-                    <p className="text-[11px] text-gray-400">{item.date}</p>
-                  </div>
+      <main className="relative w-full max-w-7xl">
+        <div className="bg-white/70 backdrop-blur-2xl border border-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.06)] rounded-[56px] p-8 lg:p-16">
+          
+          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+            
+            {/* LEFT: MODE SELECTION */}
+            <div className="space-y-10">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100">
+                  <Sparkles size={12} fill="currentColor" />
+                  Instant Simulation
                 </div>
-                <span
-                  className={`text-[10px] font-bold px-2 py-1 rounded-md ${item.color}`}
-                >
-                  {item.score}
-                </span>
+                <h1 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                  Choose Your <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-500 italic">Interview Mode</span>
+                </h1>
               </div>
-            ))}
-          </div>
-        </div>
-      </aside>
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 overflow-y-auto p-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-[40px] font-black text-[#0F172A] mb-2 tracking-tight">
-              Start a New Simulation
-            </h1>
-            <p className="text-gray-400 text-lg">
-              Configure your interview parameters to begin your AI-powered
-              session.
-            </p>
-          </div>
-
-          {/* 1. MODE */}
-          <section className="mb-12">
-            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">
-              1. Choose Interview Mode
-            </h3>
-
-            <div className="grid grid-cols-3 gap-6">
-              {modes.map((m) => (
-                <div
-                  key={m.id}
-                  onClick={() => setMode(m.id)}
-                  className={`relative p-8 rounded-[24px] border-2 transition-all cursor-pointer flex flex-col items-center text-center group ${
-                    mode === m.id
-                      ? "border-blue-500 bg-white shadow-xl shadow-blue-50"
-                      : "border-gray-100 hover:border-gray-200 bg-white"
-                  }`}
-                >
-                  {mode === m.id && (
-                    <div className="absolute top-4 right-4 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                      <div className="w-2 h-2 bg-white rounded-full" />
-                    </div>
-                  )}
-
-                  <div
-                    className={`w-14 h-14 ${m.bg} ${m.color} rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110`}
-                  >
-                    <m.icon size={28} />
-                  </div>
-
-                  <h4 className="text-lg font-bold text-gray-900 mb-2">
-                    {m.title}
-                  </h4>
-                  <p className="text-sm text-gray-400 leading-relaxed">
-                    {m.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Difficulty & Role */}
-          <div className="grid grid-cols-2 gap-12 mb-16">
-            <section>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">
-                2. Interview Difficulty
-              </h3>
-
-              <div className="flex bg-gray-50 p-1.5 rounded-2xl gap-1">
-                {["Intern", "Junior", "Middle"].map((d) => (
+              <div className="space-y-4">
+                {modes.map((m) => (
                   <button
-                    key={d}
-                    onClick={() => setDifficulty(d)}
-                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${
-                      difficulty === d
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-200"
-                        : "text-gray-500 hover:text-gray-700"
+                    key={m.id}
+                    onClick={() => setMode(m.id as any)}
+                    className={`w-full flex items-center gap-6 p-6 rounded-[32px] border-2 transition-all duration-300 group ${
+                      mode === m.id 
+                      ? `border-indigo-600 bg-white shadow-2xl ${m.ring} ring-8` 
+                      : "border-slate-100 bg-slate-50/50 hover:border-slate-200"
                     }`}
                   >
-                    {d}
+                    <div className={`w-14 h-14 ${m.bg} ${m.color} rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0`}>
+                      <m.icon size={28} />
+                    </div>
+                    <div className="text-left">
+                      <h4 className="text-lg font-bold text-slate-900">{m.title}</h4>
+                      <p className="text-sm text-slate-400 font-medium leading-snug">{m.desc}</p>
+                    </div>
                   </button>
                 ))}
               </div>
-            </section>
+            </div>
 
-           
-          </div>
+            {/* RIGHT: LEVEL & LAUNCH */}
+            <div className="flex flex-col gap-10">
+              
+              {/* Seniority Selector */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 px-1">
+                   <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-lg">
+                      <Cpu size={16} />
+                   </div>
+                   <h3 className="text-xl font-bold text-slate-800 tracking-tight">Select Experience</h3>
+                </div>
 
-          {/* Launch */}
-          <div className="flex flex-col items-center">
-            <button
-              onClick={handleLaunch}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-12 py-5 rounded-[20px] font-bold text-xl flex items-center gap-3 shadow-2xl shadow-blue-200 transition-all hover:-translate-y-1 active:scale-95"
-            >
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                <Play size={18} fill="white" className="ml-1" />
+                <div className="bg-slate-100/80 p-1.5 rounded-[28px] grid grid-cols-3 gap-1.5 border border-slate-200/50">
+                  {["Intern", "Junior", "Senior"].map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => setDifficulty(d as any)}
+                      className={`py-4 rounded-[22px] text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${
+                        difficulty === d 
+                        ? "bg-white text-indigo-600 shadow-[0_10px_25px_-5px_rgba(79,70,229,0.2)] scale-[1.02]" 
+                        : "text-slate-400 hover:text-slate-600"
+                      }`}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
               </div>
-              Launch Interview
-            </button>
 
-            <p className="mt-6 flex items-center gap-2 text-xs text-gray-400 font-medium uppercase tracking-wider">
-              <Info size={14} /> Setup takes less than a minute. AI will
-              initialize after launch.
-            </p>
+              {/* Status & Preview */}
+              <div className="bg-slate-900 rounded-[40px] p-8 text-white relative overflow-hidden group min-h-[180px] flex flex-col justify-center">
+                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-[60px] group-hover:scale-150 transition-transform duration-700" />
+                 
+                 <div className="relative z-10 space-y-4">
+                    <div className="flex items-center gap-3 text-indigo-400">
+                       <ShieldCheck size={20} />
+                       <span className="text-[10px] font-black uppercase tracking-[0.3em]">System Ready</span>
+                    </div>
+                    <h2 className="text-2xl font-bold">Initializing {mode} <br /> Simulation for {difficulty}</h2>
+                    <p className="text-slate-400 text-xs font-medium">AI will generate custom questions based on your selection.</p>
+                 </div>
+              </div>
+
+              {/* ACTION */}
+              <div>
+                <button
+                  onClick={handleLaunch}
+                  disabled={loading}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-7 rounded-[32px] font-black text-xl flex items-center justify-center gap-4 shadow-2xl shadow-indigo-200 transition-all hover:-translate-y-2 active:scale-95 disabled:opacity-50 group"
+                >
+                  {loading ? (
+                    <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <span>Generate Interview</span>
+                      <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                        <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </>
+                  )}
+                </button>
+                <div className="mt-6 flex items-center justify-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+                  <Zap size={14} className="text-amber-400" fill="currentColor" />
+                  Simulations take 5-10 seconds to build
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </main>

@@ -1,6 +1,9 @@
 
 import api from "@/libs/api";
 import {RegisterRequest, RegisterResponse } from "@/types/register";
+import { jwtDecode } from "jwt-decode";
+
+
 
 export const UserRegister = async (userData: RegisterRequest): Promise<RegisterResponse> => {
   try {
@@ -17,3 +20,19 @@ export const UserRegister = async (userData: RegisterRequest): Promise<RegisterR
   }
 };
 
+
+
+interface DecodedToken {
+  exp: number;
+}
+
+export const isTokenExpired = (token: string): boolean => {
+  try {
+    const decoded: DecodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+
+    return decoded.exp < currentTime;
+  } catch (error) {
+    return true;
+  }
+};
