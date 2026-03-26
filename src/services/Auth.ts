@@ -36,3 +36,30 @@ export const isTokenExpired = (token: string): boolean => {
     return true;
   }
 };
+
+
+export const deleteAccount = async (): Promise<string> => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Token tapılmadı");
+  }
+
+  try {
+    const response = await api.delete("/Auth/delete-account", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data || "Hesab uğurla silindi";
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(
+        error.response.data?.message || "Hesab silinərkən xəta baş verdi"
+      );
+    } else {
+      throw new Error("Serverə qoşulmaq mümkün olmadı");
+    }
+  }
+};

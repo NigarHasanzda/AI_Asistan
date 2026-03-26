@@ -1,5 +1,6 @@
 import api from "@/libs/api";
 import { CreateInternshipDto } from "@/types/internship";
+import { MatchedInternshipParams } from "@/types/Student";
 
 // Internship yaratmaq
 export const createInternship = async (data: CreateInternshipDto) => {
@@ -181,6 +182,60 @@ export const getInternshipApplications = async (
     return response.data; // Adətən { items: [], totalCount: 0 } formatında gəlir
   } catch (error: any) {
     console.error(`Internship (ID: ${internshipId}) müraciətləri gətirilərkən xəta:`, error);
+    throw error;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+export const getMatchedInternships = async (params: MatchedInternshipParams = {}) => {
+  if (typeof window === "undefined") return null;
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Token tapılmadı");
+
+  try {
+    const response = await api.get("/Students/matched-internships", {
+      headers: { Authorization: `Bearer ${token}` },
+      params,
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Internships alınarkən xəta:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+export const startPracticeInterview = async (internshipId: number) => {
+  if (typeof window === "undefined") return null;
+
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Token tapılmadı");
+
+  try {
+    const response = await api.post(
+      `/MockInterviews/practice/${internshipId}`,
+      {}, // body boşdur
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "Practice interview error:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };

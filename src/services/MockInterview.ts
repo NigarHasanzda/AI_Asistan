@@ -28,29 +28,6 @@ export const startMockInterview = async (mode: number, level: number): Promise<M
   }
 };
 
-export const startPracticeInterview = async (interviewId: number): Promise<MockInterviewResponse> => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("Token tapılmadı");
-
-    const response = await api.get(
-      `/MockInterviews/my-interviews/${interviewId}`,
-      { headers: { Authorization: `Bearer ${token}` } } // token lazım ola bilər
-    );
-
-    // 🔹 Burada tam response-u qaytarırıq
-    return response.data;
-  } catch (error: any) {
-    const message = error.response?.data?.message || error.message;
-
-    if (message.includes("Limit is reached")) {
-      alert("Limit reached! Switch to premium plan.");
-    }
-
-    console.error("Practice interview error:", message);
-    throw error;
-  }
-};
 
 
 // --- SUBMIT ANSWER ---

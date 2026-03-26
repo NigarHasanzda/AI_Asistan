@@ -1,197 +1,276 @@
 "use client";
 
-import React, { useEffect } from 'react';
-import { Search, MapPin, Building2, Banknote, ChevronRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Search,
+  MapPin,
+  Building2,
+  Banknote,
+  ChevronRight,
+  Heart
+} from "lucide-react";
 
-export interface Internship {
+import { getMatchedInternships, startPracticeInterview } from "@/services/InternshipServices";
+import {
+  addBookmark,
+  applyToInternship,
+  getBookmarks,
+  removeBookmark
+} from "@/services/Apply";
+
+interface Internship {
   id: number;
-  role: string;
-  company: string;
-  location: string;
-  salary: string;
-  aiMatch: number;
-  logo: string;
-  category: string;
-  duration: string;
-  postedAt: string;
-  technicalScore: number;
-  behavioralScore: number;
-  applicantCount: number;
-  tags: string[];
-  requirements: {
-    technical: string[];
-    soft: string[];
-  };
-  aboutRole: string;
-  aboutCompany: string;
+  title: string;
+  companyName: string;
+  locationType: number;
+  overAllMatchScore: number;
+  isPaid: boolean;
+  paymentStatus: string;
 }
-
-export const internships: Internship[] = [
-  {
-    id: 1,
-    role: 'Data Science Intern',
-    company: 'Kord AI',
-    location: 'San Francisco, CA (Remote)',
-    salary: '$4,500 - $6,000 /mo',
-    aiMatch: 85,
-    logo: 'K',
-    category: 'Engineering',
-    duration: '12 Weeks • Summer 2024',
-    postedAt: '2 days ago',
-    technicalScore: 90,
-    behavioralScore: 80,
-    applicantCount: 45,
-    tags: ['Series B', '150+ Employees', 'AI & Recruitment'],
-    aboutRole: "As a Data Science Intern at Kord AI, you will work at the intersection of recruitment and artificial intelligence. You'll help build the algorithms that match talent with opportunity, working directly on our core matching engine.",
-    aboutCompany: "Kord AI is on a mission to revolutionize how people find work. By leveraging cutting-edge LLMs and behavioral science, we're building a platform that removes bias.",
-    requirements: {
-      technical: [
-        "Proficiency in Python (Pandas, Scikit-learn, PyTorch/TensorFlow)",
-        "Strong SQL skills and experience with large datasets",
-        "Understanding of NLP and Recommendation Systems"
-      ],
-      soft: [
-        "Curiosity and a 'ship-fast' mentality",
-        "Strong communication skills for complex data findings",
-        "Current enrollment in BS/MS/PhD in a quantitative field"
-      ]
-    }
-  },
-  {
-    id: 2,
-    role: 'Backend Intern',
-    company: 'TechFlow',
-    location: 'Remote',
-    salary: '$3,500 /mo',
-    aiMatch: 98,
-    logo: 'TF',
-    category: 'Engineering',
-    duration: '10 Weeks',
-    postedAt: '1 day ago',
-    technicalScore: 95,
-    behavioralScore: 92,
-    applicantCount: 12,
-    tags: ['Startup', 'Remote First'],
-    aboutRole: "Scaling backend infrastructure using Go and Kubernetes.",
-    aboutCompany: "TechFlow is a fintech leader.",
-    requirements: { technical: ["Go", "SQL"], soft: ["Fast learner"] }
-  },
-  {
-    id: 3,
-    role: 'Product Design Intern',
-    company: 'Creatively',
-    location: 'New York, NY',
-    salary: '$4,200 /mo',
-    aiMatch: 92,
-    logo: 'C',
-    category: 'Design',
-    duration: '16 Weeks',
-    postedAt: '3 days ago',
-    technicalScore: 88,
-    behavioralScore: 95,
-    applicantCount: 88,
-    tags: ['Creative Agency'],
-    aboutRole: "Design user-centric interfaces for global brands.",
-    aboutCompany: "Leading design studio based in NY.",
-    requirements: { technical: ["Figma", "Prototyping"], soft: ["Visual storytelling"] }
-  }
-];
 
 const InternshipHub = () => {
   const router = useRouter();
-  const categories = ['All', 'Engineering', 'Design', 'Product', 'Marketing', 'Data Science'];
 
+  const categories = [
+    "All",
+    "Engineering",
+    "Design",
+    "Product",
+    "Marketing",
+    "Data Science"
+  ];
+
+  const [internships, setInternships] = useState<Internship[]>([]);
+  const [filtered, setFiltered] = useState<Internship[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([]);
+
+
+  // ✅ Data fetch
   useEffect(() => {
-    localStorage.setItem("internships", JSON.stringify(internships));
+    setMounted(true);
+
+    const fetchData = async () => {
+      try {
+        const data = await getMatchedInternships();
+        console.log("Matched Internships:", data);
+
+        if (data && Array.isArray(data.internships)) {
+          setInternships(data.internships);
+          setFiltered(data.internships);
+        }
+      } catch (error) {
+        console.error(error);
+        setInternships([]);
+        setFiltered([]);
+      }
+    };
+
+    const fetchBookmarks = async () => {
+      try {
+        const data = await getBookmarks();
+        const ids = data.map((item: any) => item.internshipId);
+        setBookmarkedIds(ids);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+    fetchBookmarks();
   }, []);
 
+  // ✅ Apply
+  const handleApply = async (id: number) => {
+    try {
+      await applyToInternship(id);
+      alert("Uğurla müraciət etdin 🚀");
+    } catch (err: any) {
+      alert(err.message || "Xəta baş verdi");
+    }
+  };
+
+  const handlePractice = async (id: number) => {
+    try {
+      const result = await startPracticeInterview(id); // <--- sən verdiyin POST funksiyası
+      console.log("Practice result:", result);
+
+      // Backend cavabında interview ID varsa istifadə et, yoxsa internship ID ilə yönləndir
+      const interviewId = result?.id || id;
+      router.push(`/userdashboard/interviews/${result}`);
+    } catch (err: any) {
+      alert(err.message || "Practice zamanı xəta baş verdi");
+    }
+  };
+  // ✅ Bookmark toggle
+  const toggleBookmark = async (id: number) => {
+    try {
+      if (bookmarkedIds.includes(id)) {
+        await removeBookmark(id);
+        setBookmarkedIds(prev => prev.filter(item => item !== id));
+      } else {
+        await addBookmark(id);
+        setBookmarkedIds(prev => [...prev, id]);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ✅ Filter + Search
+  useEffect(() => {
+    let temp = [...internships];
+
+    if (selectedCategory !== "All") {
+      temp = temp.filter(item =>
+        item.title.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+    }
+
+    if (searchTerm) {
+      temp = temp.filter(item =>
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.companyName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFiltered(temp);
+  }, [selectedCategory, searchTerm, internships]);
+
+  // ✅ Detail page
   const openDetail = (item: Internship) => {
     localStorage.setItem("selectedInternship", JSON.stringify(item));
-    router.push(`/userdashboard/internships/${item.id}`);
+    // router.push(`/userdashboard/internships/${item.id}`);
   };
+
+  // ✅ Location format
+  const formatLocation = (loc: number) => {
+    switch (loc) {
+      case 0:
+        return "Onsite";
+      case 1:
+        return "Remote";
+      case 2:
+        return "Hybrid";
+      default:
+        return "Unknown";
+    }
+  };
+
+  if (!mounted) return null;
 
   return (
     <div className="min-h-screen bg-slate-50 p-2 font-sans">
       <div className="max-w-[100%] mx-auto">
 
-        <h1 className="text-3xl font-bold text-slate-900 mb-8">Internship Hub</h1>
+        <h1 className="text-3xl font-bold text-slate-900 mb-8">
+          Internship Hub
+        </h1>
 
-        {/* Search */}
+        {/* 🔍 Search */}
         <div className="relative mb-6">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Search internships by role, company, or keywords..."
-            className="w-full py-4 pl-12 pr-4 bg-white border border-slate-100 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            placeholder="Search internships..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full py-4 pl-12 pr-4 bg-white border border-slate-100 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Filters */}
+        {/* 🎯 Filters */}
         <div className="flex flex-wrap gap-3 mb-10">
-          {categories.map((cat, index) => (
+          {categories.map((cat) => (
             <button
               key={cat}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
-                index === 0 
-                  ? 'bg-blue-600 text-white shadow-md' 
-                  : 'bg-white text-slate-600 border border-slate-200 hover:border-blue-400'
-              }`}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-6 py-2 rounded-full text-sm ${selectedCategory === cat
+                  ? "bg-blue-600 text-white"
+                  : "bg-white border"
+                }`}
             >
               {cat}
             </button>
           ))}
         </div>
 
-        {/* List */}
+        {/* 📦 List */}
         <div className="space-y-4">
-          {internships.map((item) => (
+          {filtered.length === 0 && (
+            <p className="text-center text-gray-500">
+              No internships found
+            </p>
+          )}
+
+          {filtered.map((item) => (
             <div
               key={item.id}
               onClick={() => openDetail(item)}
-              className="group cursor-pointer relative bg-white border border-slate-100 p-6 rounded-[2rem] shadow-sm hover:shadow-md transition-all flex items-center justify-between"
+              className="flex justify-between items-center p-6 bg-white rounded-2xl shadow cursor-pointer"
             >
-              <div className="flex items-center gap-6">
-                <div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-white font-bold text-xl">
-                  {item.logo}
+              <div className="flex gap-6 items-center">
+                <div className="w-16 h-16 bg-black text-white flex items-center justify-center rounded-xl">
+                  {item.companyName[0]}
                 </div>
 
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-xl font-semibold text-slate-900">{item.role}</h3>
-
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      item.aiMatch >= 90 
-                        ? 'bg-green-100 text-green-700' 
-                        : 'bg-blue-100 text-blue-700'
-                    }`}>
-                      AI MATCH: {item.aiMatch}%
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-slate-500 text-sm">
-                    <span className="flex items-center gap-1"><Building2 size={16}/> {item.company}</span>
-                    <span className="flex items-center gap-1"><MapPin size={16}/> {item.location}</span>
-                    <span className="flex items-center gap-1"><Banknote size={16}/> {item.salary}</span>
-                  </div>
+                <div>
+                  <h3 className="text-lg font-bold">{item.title}</h3>
+                  <p className="text-sm text-gray-500">
+                    {item.companyName}
+                  </p>
+                  <p className="text-xs text-blue-500">
+                    {formatLocation(item.locationType)}
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
-                <button className="px-6 py-3 border border-blue-600 text-blue-600 rounded-full font-semibold hover:bg-blue-50 transition-colors">
-                  Practice for this Role
+              <div className="flex gap-3 items-center">
+
+                {/* ❤️ Bookmark */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleBookmark(item.id);
+                  }}
+                >
+                  <Heart
+                    className={
+                      bookmarkedIds.includes(item.id)
+                        ? "text-red-500 fill-red-500"
+                        : "text-gray-400"
+                    }
+                  />
                 </button>
 
-                <button className="px-8 py-3 bg-blue-600 text-white rounded-full font-semibold shadow-[0_4px_14px_rgba(37,99,235,0.39)] hover:bg-blue-700 transition-all">
-                  Apply Now
+                {/* 🚀 Apply */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleApply(item.id);
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                >
+                  Apply
                 </button>
 
-                <ChevronRight className="text-slate-300 ml-2 group-hover:text-slate-500" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePractice(item.id);
+                  }}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg"
+                >
+                  Practice
+                </button>
+                <ChevronRight />
               </div>
             </div>
           ))}
         </div>
-
       </div>
     </div>
   );

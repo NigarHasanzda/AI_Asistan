@@ -16,12 +16,17 @@ export interface Internship {
   title: string;
   description: string;
   isPaid: boolean;
+  isSaved: boolean;
   locationType: number; // 0,1,2
   startDate: string;
   endDate: string;
   departmentId: number;
   deadlineDate: string;
   isClosed: boolean;
+  overAllMatchScore: boolean;
+  paymentStatus: string;
+  companyName:string;
+
 }
 
 export interface GetInternshipsParams {
@@ -35,7 +40,7 @@ export interface GetInternshipsParams {
 
 
 
- export interface InternshipCardProps {
+export interface InternshipCardProps {
   title: string;
   applicants: number;
   progress: number;

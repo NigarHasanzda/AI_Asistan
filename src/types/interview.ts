@@ -12,7 +12,7 @@ export interface MyInterviewsParams {
   pageSize?: number;
 }
 
-export interface Question {
+interface Question {
   order: number;
   questionText: string;
   answerText?: string | null;
@@ -28,4 +28,10 @@ export interface Interview {
   questions?: Question[];
   isCompleted?: boolean;
   totalScore?: number;
+  name: string;
+  targetJobName: string;
+  averageScore: number;
+  createdAt: string;
+  finalFeedback: string;
+
 }

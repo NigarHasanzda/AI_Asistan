@@ -48,37 +48,51 @@ export const getStudentDashboard = async () => {
   }
 };
 
-// Matched Internships
-export const getMatchedInternships = async (params: MatchedInternshipParams = {}) => {
-  if (typeof window === "undefined") return null;
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
 
-  try {
-    const response = await api.get("/Students/matched-internships", {
-      headers: { Authorization: `Bearer ${token}` },
-      params,
-    });
-    return response.data;
-  } catch (error: any) {
-    console.error("Internships alınarkən xəta:", error.response?.data || error.message);
-    throw error;
-  }
-};
 
 // Profil yeniləmə (PATCH)
-export const updateStudentProfile = async (data: { fullname: string; targetJobId: number }) => {
+export const updateFullStudentProfile = async (profileData: any) => {
   if (typeof window === "undefined") return null;
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Token tapılmadı");
 
   try {
-    const response = await api.patch("/Students/update-profile", data, {
-      headers: { Authorization: `Bearer ${token}` },
+
+    const response = await api.patch("/Students/update-profile", profileData, {
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
     });
     return response.data;
   } catch (error: any) {
     console.error("Profil yenilənərkən xəta:", error.response?.data || error.message);
+    throw error;
+  }
+
+};
+
+
+// Skill silmək
+export const deleteStudentSkill = async (skillId: number) => {
+  if (typeof window === "undefined") return null;
+
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Token tapılmadı");
+
+  try {
+    const response = await api.delete(`/Students/${skillId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "Skill silinərkən xəta:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
