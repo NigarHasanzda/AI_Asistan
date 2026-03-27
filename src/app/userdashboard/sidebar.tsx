@@ -17,7 +17,8 @@ const menuItems = [
   { name: "Internship Hub", icon: <BusinessCenterIcon sx={{fontSize: 23}} />, path: "/userdashboard/internships" },
     { name: "My Applications ", icon: <BusinessCenterIcon sx={{fontSize: 23}} />, path: "/userdashboard/myaplication" },
       { name: "Saved Internship", icon: <RecordVoiceOverIcon sx={{fontSize: 23}}  />, path: "/userdashboard/savedinternship" },
-  { name: "Profile", icon: <Person2Icon sx={{fontSize: 23}} />, path: "/userdashboard/profile" },
+ { name: "LeaderBoard", icon: <LayoutDashboard size={23} />, path: "/userdashboard/leaderboard" },
+      { name: "Profile", icon: <Person2Icon sx={{fontSize: 23}} />, path: "/userdashboard/profile" },
 ];
 
 const Sidebar = () => {

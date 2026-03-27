@@ -49,27 +49,30 @@ export const getStudentDashboard = async () => {
 };
 
 
-
 // Profil yeniləmə (PATCH)
-export const updateFullStudentProfile = async (profileData: any) => {
+export const updateFullStudentProfile = async (profileData: FormData) => {
   if (typeof window === "undefined") return null;
+
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Token tapılmadı");
 
   try {
-
     const response = await api.patch("/Students/update-profile", profileData, {
-      headers: { 
+      headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
+        // ❗ Content-Type YAZMA!
+        // axios özü avtomatik multipart/form-data qoyacaq
       },
     });
+
     return response.data;
   } catch (error: any) {
-    console.error("Profil yenilənərkən xəta:", error.response?.data || error.message);
+    console.error(
+      "Profil yenilənərkən xəta:",
+      error.response?.data || error.message
+    );
     throw error;
   }
-
 };
 
 
