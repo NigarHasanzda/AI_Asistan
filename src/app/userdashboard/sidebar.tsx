@@ -3,22 +3,61 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, LogOut } from "lucide-react";
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
-import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
-import Person2Icon from '@mui/icons-material/Person2';
-import { Menu } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  LogOut, 
+  MessageSquareQuote, 
+  Briefcase, 
+  ClipboardCheck, 
+  Bookmark, 
+  Trophy, 
+  UserCircle,
+  Menu,
+  X,
+  Sparkles
+} from "lucide-react";
 
 const menuItems = [
-  { name: "Dashboard", icon: <LayoutDashboard size={23} />, path: "/userdashboard" },
-  { name: "All Interviews", icon: <PsychologyIcon sx={{fontSize: 23}} />, path: "/userdashboard/myinterviews" },
-  { name: "Mock Interview", icon: <RecordVoiceOverIcon sx={{fontSize: 23}}  />, path: "/userdashboard/interviews" },
-  { name: "Internship Hub", icon: <BusinessCenterIcon sx={{fontSize: 23}} />, path: "/userdashboard/internships" },
-    { name: "My Applications ", icon: <BusinessCenterIcon sx={{fontSize: 23}} />, path: "/userdashboard/myaplication" },
-      { name: "Saved Internship", icon: <RecordVoiceOverIcon sx={{fontSize: 23}}  />, path: "/userdashboard/savedinternship" },
- { name: "LeaderBoard", icon: <LayoutDashboard size={23} />, path: "/userdashboard/leaderboard" },
-      { name: "Profile", icon: <Person2Icon sx={{fontSize: 23}} />, path: "/userdashboard/profile" },
+  { 
+    name: "Dashboard", 
+    icon: <LayoutDashboard size={22} />, 
+    path: "/userdashboard" 
+  },
+  { 
+    name: "All Interviews", 
+    icon: <MessageSquareQuote size={22} />, 
+    path: "/userdashboard/myinterviews" 
+  },
+  { 
+    name: "Mock Interview", 
+    icon: <Sparkles size={22} />, 
+    path: "/userdashboard/interviews" 
+  },
+  { 
+    name: "Internship", 
+    icon: <Briefcase size={22} />, 
+    path: "/userdashboard/internships" 
+  },
+  { 
+    name: "My Applications", 
+    icon: <ClipboardCheck size={22} />, 
+    path: "/userdashboard/myaplication" 
+  },
+  { 
+    name: "Saved Internship", 
+    icon: <Bookmark size={22} />, 
+    path: "/userdashboard/savedinternship" 
+  },
+  { 
+    name: "LeaderBoard", 
+    icon: <Trophy size={22} />, 
+    path: "/userdashboard/leaderboard" 
+  },
+  { 
+    name: "Profile", 
+    icon: <UserCircle size={22} />, 
+    path: "/userdashboard/profile" 
+  },
 ];
 
 const Sidebar = () => {
@@ -35,52 +74,57 @@ const Sidebar = () => {
   return (
     <>
       {/* Hamburger for mobile */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
+      <div className="md:hidden fixed top-4 left-4 z-[60]">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 rounded-md bg-white shadow-md"
+          className="p-2.5 rounded-xl bg-white shadow-lg border border-slate-100 text-slate-600 active:scale-95 transition-all"
         >
-          <Menu size={24} />
+          {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
-      <aside className={`fixed top-0 left-0 h-screen bg-white border-r border-[#F1F5F9] flex flex-col z-50 transition-transform duration-300
-        ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:w-[260px] w-[260px]`}>
+      <aside className={`fixed top-0 left-0 h-screen bg-white border-r border-slate-100 flex flex-col z-50 transition-all duration-300 ease-in-out
+        ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"} md:translate-x-0 md:w-[280px] w-[280px]`}>
         
         {/* Logo Section */}
-        <div className="pt-8 px-8 pb-10">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#2563EB] rotate-45 flex items-center justify-center rounded-[4px] shadow-sm shadow-blue-100">
-              <div className="w-3 h-3 bg-white -rotate-45" />
+        <div className="pt-10 px-8 pb-12">
+          <div className="flex items-center gap-3.5">
+            <div className="w-9 h-9 bg-blue-600 rotate-[15deg] flex items-center justify-center rounded-xl shadow-lg shadow-blue-200 transition-transform hover:rotate-0">
+              <div className="w-3.5 h-3.5 bg-white rounded-sm" />
             </div>
             <div className="flex flex-col">
-              <h1 className="text-xl font-bold text-[#0F172A] tracking-tight leading-none">Kord AI</h1>
-              <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[0.1em] mt-1.5">
-                Career Development
+              <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none">CLP AI</h1>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-1.5">
+                Career Launch Pad
               </span>
             </div>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-grow px-4 space-y-1">
+        <nav className="flex-grow px-4 space-y-1.5 overflow-y-auto custom-scrollbar">
           {menuItems.map((item) => {
             const isActive = pathname === item.path;
             return (
               <Link
                 key={item.name}
                 href={item.path}
-                className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                onClick={() => setIsOpen(false)}
+                className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative ${
                   isActive
-                    ? "bg-[#EFF6FF] text-[#2563EB]"
-                    : "text-[#636d7a] hover:bg-[#F8FAFC] hover:text-[#0F172A]"
+                    ? "bg-blue-50 text-blue-600 shadow-sm shadow-blue-50/50"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                 }`}
-                onClick={() => setIsOpen(false)} // mobile click hides sidebar
               >
-                <span className={`transition-colors ${isActive ? "text-[#2563EB]" : "text-[#636d7a] group-hover:text-[#64748B]"}`}>
+                {/* Active Indicator Line */}
+                {isActive && (
+                  <div className="absolute left-0 w-1 h-6 bg-blue-600 rounded-r-full" />
+                )}
+                
+                <span className={`transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600"}`}>
                   {item.icon}
                 </span>
-                <span className={`text-[15px] font-semibold tracking-[-0.01em] ${isActive ? "text-[#2563EB]" : ""}`}>
+                <span className={`text-[14.5px] font-bold tracking-tight ${isActive ? "text-blue-600" : ""}`}>
                   {item.name}
                 </span>
               </Link>
@@ -89,19 +133,24 @@ const Sidebar = () => {
         </nav>
 
         {/* Logout Button */}
-        <div className="p-4 border-t border-[#F1F5F9]">
+        <div className="p-6 mt-auto">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3.5 px-4 py-4 text-[#64748B] hover:text-[#EF4444] transition-all duration-200 font-semibold group rounded-xl hover:bg-red-50/50"
+            className="w-full flex items-center gap-3.5 px-4 py-4 text-slate-500 hover:text-rose-600 transition-all duration-200 font-bold group rounded-2xl hover:bg-rose-50 border border-transparent hover:border-rose-100"
           >
-            <LogOut size={20} className="text-[#94A3B8] group-hover:text-[#EF4444] transition-colors" />
-            <span className="text-[15px]">Log Out</span>
+            <LogOut size={20} className="text-slate-400 group-hover:text-rose-500 group-hover:-translate-x-1 transition-all" />
+            <span className="text-[14.5px]">Sistemdən Çıx</span>
           </button>
         </div>
       </aside>
 
-      {/* Overlay for mobile when sidebar open */}
-      {isOpen && <div onClick={() => setIsOpen(false)} className="fixed inset-0 bg-black/20 z-40 md:hidden" />}
+      {/* Overlay for mobile */}
+      {isOpen && (
+        <div 
+          onClick={() => setIsOpen(false)} 
+          className="fixed inset-0 bg-slate-900/20 backdrop-blur-[2px] z-40 md:hidden transition-opacity" 
+        />
+      )}
     </>
   );
 };

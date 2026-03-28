@@ -12,11 +12,13 @@ import {
   Trophy,
   Flame,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  Loader2 // Yeni ikon
 } from "lucide-react";
 import api from "@/services/api";
 import { motion, AnimatePresence } from "framer-motion";
 
+// ... (Interface-lər eyni qalır)
 interface Interview {
   id: number;
   role?: string;
@@ -31,8 +33,7 @@ interface Interview {
 export interface Streak {
   currentStreak: number;
   longestStreak: number;
-   practicedToday: boolean;
-
+  practicedToday: boolean;
 }
 
 const Page: React.FC = () => {
@@ -41,7 +42,7 @@ const Page: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [streak, setStreak] = useState<Streak | null>(null);
   const [page, setPage] = useState(1);
-  console.log(allInterviews)
+  const [retryingId, setRetryingId] = useState<number | null>(null); // Retry loading state
   const pageSize = 9;
 
   useEffect(() => {
@@ -56,7 +57,6 @@ const Page: React.FC = () => {
     try {
       setLoading(true);
       const data = await getMyInterviews({ page: pageNumber, pageSize });
-      console.log(data);
       setAllInterviews(data);
     } catch (err) {
       console.error(err);
@@ -65,30 +65,49 @@ const Page: React.FC = () => {
     }
   };
 
-  
-
   const handleRetry = async (id: number) => {
+    setRetryingId(id); // Toast-u göstər
     try {
       const response = await api.post(`/MockInterviews/my-interviews/${id}/retry`, null);
       router.push(`/userdashboard/interviews/${response.data}`);
     } catch (err) {
+      // Xəta halında alternativ yönləndirmə
       router.push(`/userdashboard/interviews/${id + 1000}`);
+    } finally {
+      // Bir müddət sonra loading-i bağla (yönləndirmə baş verənə qədər)
+      setTimeout(() => setRetryingId(null), 2000);
     }
   };
 
-  // ✅ Dinamik Yönləndirmə Funksiyası
   const handleCardClick = (i: Interview) => {
     if (i.isCompleted) {
-      // Tamamlanıbsa detail səhifəsinə
       router.push(`/userdashboard/interviews/${i.id}/detail`);
     } else {
-      // Tamamlanmayıbsa intervyu sessiyasına
       router.push(`/userdashboard/interviews/${i.id}`);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] relative overflow-hidden font-sans selection:bg-indigo-100 selection:text-indigo-700">
+      
+      {/* RETRY TOAST NOTIFICATION */}
+      <AnimatePresence>
+        {retryingId && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-4 bg-slate-900 text-white px-8 py-5 rounded-[24px] shadow-2xl border border-slate-800 backdrop-blur-xl"
+          >
+            <Loader2 className="animate-spin text-indigo-400" size={24} />
+            <div className="flex flex-col">
+              <span className="text-xs font-black uppercase tracking-widest text-slate-400">System Message</span>
+              <p className="font-bold text-sm tracking-tight">Preparing your retake session...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200/30 blur-[120px] rounded-full -z-10" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-100/40 blur-[120px] rounded-full -z-10" />
@@ -154,7 +173,7 @@ const Page: React.FC = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                   key={i.id}
-                  onClick={() => handleCardClick(i)} // ✅ Yenilənmiş klik funksiyası
+                  onClick={() => handleCardClick(i)}
                   className={`group relative bg-white rounded-[32px] p-8 border border-slate-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 cursor-pointer overflow-hidden ${
                     !i.isCompleted ? 'ring-2 ring-indigo-500 ring-offset-4 ring-offset-[#f8fafc]' : ''
                   }`}
@@ -216,9 +235,10 @@ const Page: React.FC = () => {
                     {i.isCompleted && (
                       <button
                         onClick={(e) => { e.stopPropagation(); handleRetry(i.id); }}
-                        className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-indigo-600 hover:rotate-180 transition-all duration-500 active:scale-90 shadow-lg"
+                        disabled={retryingId !== null}
+                        className="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-indigo-600 hover:rotate-180 transition-all duration-500 active:scale-90 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <RotateCcw size={20} />
+                        {retryingId === i.id ? <Loader2 className="animate-spin" size={20} /> : <RotateCcw size={20} />}
                       </button>
                     )}
                   </div>
@@ -228,7 +248,7 @@ const Page: React.FC = () => {
           </AnimatePresence>
         )}
 
-        {/* ✅ SMART PAGINATION - Səhifə sayına görə özünü tənzimləyir */}
+        {/* ... (Pagination eyni qalır) */}
         {!loading && (allInterviews.length > 0 || page > 1) && (
           <motion.div 
             initial={{ opacity: 0 }}
@@ -276,4 +296,3 @@ const Page: React.FC = () => {
 };
 
 export default Page;
-

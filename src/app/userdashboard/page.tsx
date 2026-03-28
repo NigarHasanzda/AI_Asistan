@@ -17,6 +17,8 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Page = () => {
   const [profile, setProfile] = useState<any>(null);
+  console.log(profile);
+  
   const [streak, setStreak] = useState<any>(null);
   const [dashboard, setDashboard] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -36,12 +38,12 @@ const Page = () => {
       setStreak(streakData);
       setDashboard(dashboardData);
 
-      // Streak statusuna görə Toast mesajı
+      // Toast message based on Streak status
       if (streakData) {
         if (streakData.practicedToday) {
-          setToast("Gündəlik intervyu hədəfinizi tamamlamısınız! 🎉");
+          setToast("You have completed your daily interview goal! 🎉");
         } else {
-          setToast("Gündəlik intervyu hədəfiniz gözləyir! 🔔");
+          setToast("Your daily interview goal is waiting! 🔔");
         }
       }
     } catch (err: any) {
@@ -95,7 +97,7 @@ const Page = () => {
               <FiZap className="w-5 h-5 fill-indigo-600" />
             </div>
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter">Bildiriş</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-tighter">Notification</p>
               <p className="text-sm font-bold text-slate-800">{toast}</p>
             </div>
           </motion.div>
@@ -111,7 +113,7 @@ const Page = () => {
               <span className="h-2 w-8 bg-indigo-600 rounded-full" />
               <h1 className="text-4xl font-black text-slate-950 tracking-tight">KORD <span className="text-indigo-600">AI</span></h1>
             </div>
-            <p className="text-slate-500 font-medium">Xoş gəldin, <span className="text-slate-950">{dashboard?.fullname}</span>. Profil analizin hazırdır.</p>
+            <p className="text-slate-500 font-medium">Welcome, <span className="text-slate-950">{dashboard?.fullname}</span>. Your profile analysis is ready.</p>
           </div>
           
           <div className="flex items-center gap-4 bg-white p-2 rounded-3xl border border-slate-100 shadow-sm">
@@ -119,7 +121,7 @@ const Page = () => {
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Streak</p>
               <p className="text-lg font-black text-slate-900 flex items-center gap-2">
                 <FiZap className={streak?.practicedToday ? "text-orange-500 fill-orange-500" : "text-slate-300"} /> 
-                {dashboard?.currentStreak} GÜN
+                {dashboard?.currentStreak} DAYS
               </p>
             </div>
             <div className="h-10 w-[1px] bg-slate-100" />
@@ -155,17 +157,17 @@ const Page = () => {
               
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-black text-slate-950">AI Profil Analizi</h2>
+                  <h2 className="text-2xl font-black text-slate-950">AI Profile Analysis</h2>
                   <p className="text-slate-500 leading-relaxed font-medium italic">"{profile?.feedback}"</p>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                    <div className="bg-slate-50/50 p-4 rounded-2xl border border-slate-100/50">
-                      <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Güclü Tərəflər</p>
-                      <p className="text-xs font-bold text-slate-700">{profile?.strengths?.length > 0 ? profile.strengths[0] : "Analiz gözlənilir..."}</p>
+                      <p className="text-[10px] font-black text-slate-400 uppercase mb-2">Strengths</p>
+                      <p className="text-xs font-bold text-slate-700">{profile?.strengths?.length > 0 ? profile.strengths[0] : "Analysis pending..."}</p>
                    </div>
                    <div className="bg-indigo-50/30 p-4 rounded-2xl border border-indigo-100/30">
-                      <p className="text-[10px] font-black text-indigo-400 uppercase mb-2">Növbəti Addım</p>
+                      <p className="text-[10px] font-black text-indigo-400 uppercase mb-2">Next Step</p>
                       <p className="text-xs font-bold text-indigo-900">{profile?.improvementSteps?.[0]}</p>
                    </div>
                 </div>
@@ -176,7 +178,7 @@ const Page = () => {
                   className="flex items-center gap-2 text-sm font-bold text-white bg-indigo-600 px-8 py-4 rounded-2xl hover:bg-indigo-700 transition-all hover:shadow-xl hover:shadow-indigo-200 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {refreshing ? <FiLoader className="animate-spin" /> : null}
-                  {refreshing ? "Analiz Yenilənir..." : "Tam Analizi Yenilə"} <FiArrowRight />
+                  {refreshing ? "Updating Analysis..." : "Refresh Full Analysis"} <FiArrowRight />
                 </button>
               </div>
             </div>
@@ -184,20 +186,20 @@ const Page = () => {
 
           {/* Quick Stats */}
           <div className="lg:col-span-4 space-y-6">
-             <StatCard label="Ümumi Müraciətlər" value={dashboard?.totalApplications} sub="Karyera mərkəzi" icon={<FiBriefcase />} color="indigo" />
-             <StatCard label="Intervyu Seansı" value={dashboard?.totalInterviews} sub={`Ort. ${dashboard?.averageInterviewScore.toFixed(1)} Bal`} icon={<FiVideo />} color="orange" />
+             <StatCard label="Total Applications" value={dashboard?.totalApplications} sub="Career Center" icon={<FiBriefcase />} color="indigo" />
+             <StatCard label="Interview Sessions" value={dashboard?.totalInterviews} sub={`Avg. ${dashboard?.averageInterviewScore.toFixed(1)} Score`} icon={<FiVideo />} color="orange" />
              
              <div className="bg-slate-900 p-8 rounded-[32px] text-white overflow-hidden relative group">
                 <div className="absolute -bottom-4 -right-4 opacity-10 group-hover:scale-110 transition-transform">
                    <FiClock size={120} />
                 </div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Gözləmədə Olan</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Pending</p>
                 <h4 className="text-4xl font-black mb-2 flex items-baseline gap-2">
                    {dashboard?.pendingApplications}
-                   <span className="text-xs font-bold text-slate-500 uppercase tracking-tighter">Müraciət</span>
+                   <span className="text-xs font-bold text-slate-500 uppercase tracking-tighter">Apps</span>
                 </h4>
                 <div className="flex items-center gap-2 text-amber-400 font-bold text-xs mt-4">
-                  <FiLoader className="animate-spin" /> Cavab gözlənilir...
+                  <FiLoader className="animate-spin" /> Awaiting response...
                 </div>
              </div>
           </div>
@@ -206,7 +208,7 @@ const Page = () => {
           <div className="lg:col-span-12 grid grid-cols-1 xl:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
               <h3 className="text-sm font-black text-slate-950 uppercase tracking-widest mb-6 flex items-center gap-2">
-                <FiAlertCircle className="text-red-500" /> Kritik Boşluqlar
+                <FiAlertCircle className="text-red-500" /> Critical Gaps
               </h3>
               <div className="space-y-5">
                 {profile?.missingSkills?.map((skill: string, i: number) => (
@@ -225,7 +227,7 @@ const Page = () => {
 
             <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
               <h3 className="text-sm font-black text-slate-950 uppercase tracking-widest mb-6 flex items-center gap-2">
-                <FiTrendingUp className="text-indigo-600" /> Inkişaf Planı
+                <FiTrendingUp className="text-indigo-600" /> Improvement Plan
               </h3>
               <div className="relative space-y-6 before:absolute before:inset-0 before:ml-2.5 before:h-full before:w-0.5 before:bg-slate-50">
                 {profile?.improvementSteps?.map((step: string, i: number) => (
@@ -239,7 +241,7 @@ const Page = () => {
 
             <div className="bg-white p-8 rounded-[32px] border border-slate-100 shadow-sm">
               <h3 className="text-sm font-black text-slate-950 uppercase tracking-widest mb-6 flex items-center gap-2">
-                <FiXCircle className="text-slate-400" /> Zəif Nöqtələr
+                <FiXCircle className="text-slate-400" /> Weak Points
               </h3>
               <div className="space-y-3">
                 {profile?.weaknesses?.map((w: string, i: number) => (
@@ -255,15 +257,15 @@ const Page = () => {
           {/* Recent Activity Table */}
           <div className="lg:col-span-8 bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden">
              <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-                <h3 className="font-black text-slate-950 text-xs uppercase tracking-widest">Son Aktivlik</h3>
-                <button className="text-[10px] font-black text-indigo-600 hover:underline tracking-widest">HAMSINA BAX</button>
+                <h3 className="font-black text-slate-950 text-xs uppercase tracking-widest">Recent Activity</h3>
+                <button className="text-[10px] font-black text-indigo-600 hover:underline tracking-widest">VIEW ALL</button>
              </div>
              <div className="overflow-x-auto">
                 <table className="w-full text-left">
                    <thead>
                       <tr className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
-                         <th className="px-8 py-4">Vəzifə</th>
-                         <th className="px-8 py-4">Şirkət</th>
+                         <th className="px-8 py-4">Position</th>
+                         <th className="px-8 py-4">Company</th>
                          <th className="px-8 py-4">Status</th>
                       </tr>
                    </thead>
@@ -286,7 +288,7 @@ const Page = () => {
 
           {/* Saved Internships */}
           <div className="lg:col-span-4 bg-white rounded-[40px] border border-slate-100 shadow-sm p-8">
-             <h3 className="font-black text-slate-950 text-xs uppercase tracking-widest mb-8">Yadda Saxlanılanlar</h3>
+             <h3 className="font-black text-slate-950 text-xs uppercase tracking-widest mb-8">Saved Internships</h3>
              <div className="space-y-6">
                 {dashboard?.savedInternships?.map((intern: any) => (
                   <div key={intern.internshipId} className="group cursor-pointer">
@@ -329,7 +331,7 @@ const LoadingSkeleton = () => (
   <div className="min-h-screen bg-[#FDFDFF] p-10 flex items-center justify-center">
     <div className="space-y-4 text-center">
       <div className="animate-spin h-10 w-10 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto" />
-      <p className="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">Yüklənir...</p>
+      <p className="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">Loading...</p>
     </div>
   </div>
 );

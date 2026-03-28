@@ -12,6 +12,7 @@ import { CreateExperience, CreateProject, CreateStudentSkill } from "@/services/
 import { deleteStudentSkill, updateFullStudentProfile } from "@/services/StudentProfile";
 import { GetTargetJobs } from "@/services/TargetJob";
 import { motion, AnimatePresence } from "framer-motion";
+import { deleteProjectSkill } from "@/services/UpdateProjectExpierence";
 
 export default function StudentProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -317,16 +318,58 @@ export default function StudentProfilePage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {profile?.projects?.length > 0 ? profile.projects.map((proj: any) => (
                           <div key={proj.id} className="group p-10 rounded-[40px] border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-2xl transition-all flex flex-col h-full">
+
+                            {/* Header */}
                             <div className="flex justify-between items-start mb-4">
                               <h3 className="font-black text-2xl text-slate-800 group-hover:text-indigo-600 transition-colors">{proj.name}</h3>
-                              <button onClick={() => openEditProj(proj)} className="p-2 text-slate-300 hover:text-indigo-600 transition-colors"><Edit2 size={18} /></button>
+                              <button onClick={() => openEditProj(proj)} className="p-2 text-slate-300 hover:text-indigo-600 transition-colors">
+                                <Edit2 size={18} />
+                              </button>
                             </div>
-                            <p className="text-slate-500 text-sm mb-10 line-clamp-3 leading-relaxed flex-grow">{proj.description}</p>
+
+                            {/* Description */}
+                            <p className="text-slate-500 text-sm mb-4 line-clamp-3 leading-relaxed flex-grow">{proj.description}</p>
+
+                            {/* Skills */}
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {proj.skills?.map((skill: any) => (
+                                <div key={skill.id} className="flex items-center gap-1 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-2xl text-xs font-bold">
+                                  {skill.name}
+                                  <button
+                                    onClick={async () => {
+                                      try {
+                                        await deleteProjectSkill(proj.id, skill.id);
+                                        // UI-dan sil
+                                        setProfile((prev: any) => ({
+                                          ...prev,
+                                          projects: prev.projects.map((p: any) =>
+                                            p.id === proj.id
+                                              ? { ...p, skills: p.skills.filter((s: any) => s.id !== skill.id) }
+                                              : p
+                                          ),
+                                        }));
+                                      } catch (err) {
+                                        console.error("Skill delete failed:", err);
+                                      }
+                                    }}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    &times;
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Project Link */}
                             <a href={proj.projectUrl} target="_blank" rel="noopener noreferrer" className="w-full inline-flex items-center justify-center gap-3 text-[11px] font-black text-white bg-slate-900 px-6 py-4 rounded-2xl uppercase tracking-widest hover:bg-indigo-600 transition-all">
                               Inspect Project <ExternalLink size={16} />
                             </a>
                           </div>
-                        )) : <div className="col-span-full text-center py-20 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200 text-slate-400 font-bold">Your portfolio gallery is empty.</div>}
+                        )) : (
+                          <div className="col-span-full text-center py-20 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200 text-slate-400 font-bold">
+                            Your portfolio gallery is empty.
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   )}
@@ -449,36 +492,76 @@ export default function StudentProfilePage() {
       <AnimatePresence>
         {isSkillModalOpen && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsSkillModalOpen(false)} className="absolute inset-0 bg-slate-900/90 backdrop-blur-md" />
-            <motion.div initial={{ scale: 0.9, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 30 }} className="bg-white rounded-[48px] w-full max-w-xl p-12 shadow-2xl relative z-10">
+            {/* Modal arxa fon */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsSkillModalOpen(false)}
+              className="absolute inset-0 bg-slate-900/900 backdrop-blur"
+            />
+
+            {/* Modal konteyner */}
+            <motion.div
+              initial={{ scale: 0.9, y: 30 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 30 }}
+              className="bg-white rounded-[48px] w-full max-w-xl p-12 shadow-2xl relative z-10"
+            >
+              {/* Header */}
               <div className="flex justify-between items-center mb-10">
-                <h2 className="text-3xl font-black italic tracking-tighter uppercase text-slate-900">Manage Skills</h2>
-                <button onClick={() => setIsSkillModalOpen(false)} className="p-3 bg-slate-50 rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all"><X size={24} /></button>
+                <h2 className="text-3xl font-black italic tracking-tighter uppercase text-slate-900">
+                  Manage Skills
+                </h2>
+                <button
+                  onClick={() => setIsSkillModalOpen(false)}
+                  className="p-3 bg-slate-50 rounded-2xl hover:bg-red-50 hover:text-red-500 transition-all"
+                >
+                  <X size={24} />
+                </button>
               </div>
 
+              {/* Input + Add Button */}
               <div className="relative mb-12">
                 <input
-                  value={newSkill} onChange={(e) => setNewSkill(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()}
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddSkill()}
                   placeholder="e.g. TypeScript"
                   className="w-full bg-slate-50 border-2 border-slate-100 rounded-[28px] py-6 px-8 outline-none focus:border-indigo-600 font-bold text-lg transition-all"
                 />
-                <button onClick={handleAddSkill} disabled={addingSkill || !newSkill.trim()} className="absolute right-3 top-3 bottom-3 px-8 bg-indigo-600 text-white rounded-[20px] font-black text-xs uppercase tracking-widest hover:bg-slate-900 transition-all disabled:opacity-50 flex items-center gap-2">
+                <button
+                  onClick={handleAddSkill}
+                  disabled={addingSkill || !newSkill.trim()}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-5 py-2 rounded-2xl font-bold text-white
+                      bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 
+                       disabled:opacity-50 transition-all flex items-center gap-2 shadow-lg"
+                >
                   {addingSkill ? "Adding..." : <><Send size={16} /> Add</>}
                 </button>
               </div>
 
+              {/* Skills list */}
               <div className="flex flex-wrap gap-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                 {profile?.skills && profile.skills.length > 0 ? profile.skills.map((skill: any) => (
-                  <div key={skill.id} className="group ...">
-                    <span className="font-black ...">{skill.name || skill}</span>
+                  <div
+                    key={skill.id}
+                    className="flex items-center gap-2 px-4 py-2 rounded-2xl text-white font-bold text-sm 
+                         bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900
+                         hover:scale-105 hover:shadow-[0_0_10px_rgba(255,0,150,0.5)]
+                         transition-all duration-300"
+                  >
+                    <span>{skill.name || skill}</span>
                     <button
-                      onClick={() => handleDeleteSkill(skill.id)} // Index yox, ID göndər
-                      className="..."
+                      onClick={() => handleDeleteSkill(skill.id)}
+                      className="p-1 rounded-full bg-white/30 hover:bg-white/50 transition-colors"
                     >
                       <Trash size={16} />
                     </button>
                   </div>
-                )) : <p className="text-slate-300 italic font-bold text-center w-full">No skills found.</p>}
+                )) : (
+                  <p className="text-slate-300 italic font-bold text-center w-full">No skills found.</p>
+                )}
               </div>
             </motion.div>
           </div>

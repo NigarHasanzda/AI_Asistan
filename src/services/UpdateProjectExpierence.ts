@@ -28,3 +28,12 @@ export const updateProject = async (id: number, data: {
   });
   return response.data;
 };
+
+// --- DELETE PROJECT SKILL ---
+export const deleteProjectSkill = async (projectId: number, skillId: number) => {
+  const token = localStorage.getItem("token") || "";
+  const response = await api.delete(`/Projects/${projectId}/skills/${skillId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  return response.data;
+};
