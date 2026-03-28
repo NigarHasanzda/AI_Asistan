@@ -53,6 +53,11 @@ const menuItems = [
     icon: <Trophy size={22} />, 
     path: "/userdashboard/leaderboard" 
   },
+    { 
+    name: "Payment", 
+    icon: <Trophy size={22} />, 
+    path: "/userdashboard/payment" 
+  },
   { 
     name: "Profile", 
     icon: <UserCircle size={22} />, 
