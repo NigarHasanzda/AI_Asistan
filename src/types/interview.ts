@@ -25,7 +25,7 @@ export interface Interview {
   mode?: string;
   level?: string;
   role?: string;
-  questions?: Question[];
+  questions: Question[];
   isCompleted?: boolean;
   totalScore?: number;
   name: string;

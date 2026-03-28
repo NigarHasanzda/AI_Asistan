@@ -4,9 +4,16 @@ export interface RegisterRequest {
   email: string;
   password: string;
   role: number; // 0 = normal user, 1 = admin və s.
+
 }
 
-export interface RegisterResponse {
+export interface RegisterSuccessResponse {
+  token: string;
+  username?: string;
+  role?: number;
+}
+
+export interface RegisterErrorResponse {
   type: string;
   title: string;
   status: number;
@@ -15,7 +22,6 @@ export interface RegisterResponse {
   };
   traceId?: string;
 }
-
 export interface CreateProfileRequest {
   fullname: string;
   targetJobId: number;

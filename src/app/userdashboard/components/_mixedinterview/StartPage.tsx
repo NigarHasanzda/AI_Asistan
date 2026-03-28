@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getMyInterviews, startPracticeInterview, getInterviewById } from "@/services/MockInterview";
+import { getMyInterviews, getInterviewById } from "@/services/MockInterview";
 import api from "@/libs/api";
 
 interface Question {

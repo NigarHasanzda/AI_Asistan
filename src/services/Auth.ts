@@ -1,26 +1,34 @@
 
 import api from "@/libs/api";
-import {RegisterRequest, RegisterResponse } from "@/types/register";
+import { RegisterErrorResponse, RegisterRequest, RegisterSuccessResponse } from "@/types/register";
 import { jwtDecode } from "jwt-decode";
 
 
 
-export const UserRegister = async (userData: RegisterRequest): Promise<RegisterResponse> => {
+export const UserRegister = async (
+  userData: RegisterRequest
+): Promise<RegisterSuccessResponse> => {
   try {
-    const response = await api.post<RegisterResponse>("/Auth/register", userData);
+    const response = await api.post<RegisterSuccessResponse>(
+      "/Auth/register",
+      userData
+    );
     return response.data;
   } catch (error: any) {
     if (error.response) {
-      // Server cavabı gəlib
-      throw new Error(error.response.data.message || "Qeydiyyat zamanı xəta baş verdi");
+      const errData: RegisterErrorResponse = error.response.data;
+
+      const message =
+        errData?.title ||
+        Object.values(errData?.errors || {})?.flat()?.[0] ||
+        "Qeydiyyat zamanı xəta baş verdi";
+
+      throw new Error(message);
     } else {
-      // Şəbəkə və ya başqa xəta
       throw new Error(error.message || "Serverə qoşulmaq mümkün olmadı");
     }
   }
 };
-
-
 
 interface DecodedToken {
   exp: number;

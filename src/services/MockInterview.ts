@@ -1,5 +1,6 @@
+import { Streak } from "@/app/userdashboard/myinterviews/page";
 import api from "@/libs/api";
-import { MockInterviewResponse, MyInterviewsParams } from "@/types/interview";
+import { Interview, MockInterviewResponse, MyInterviewsParams } from "@/types/interview";
 
 // --- START MOCK INTERVIEW ---
 export const startMockInterview = async (mode: number, level: number): Promise<MockInterviewResponse> => {
@@ -58,36 +59,30 @@ export const submitAnswer = async (
 
 export const getMyInterviews = async (
   params: MyInterviewsParams = { page: 1, pageSize: 10 }
-): Promise<MockInterviewResponse[]> => {
+): Promise<Interview[]> => {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Token tapılmadı");
 
     const response = await api.get("/MockInterviews/my-interviews", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      params: {
-        page: params.page,
-        pageSize: params.pageSize,
-      },
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page: params.page, pageSize: params.pageSize },
     });
 
-    return response.data;
+    // Burada response.data-ı cast edirik
+    return response.data as Interview[];
   } catch (error: any) {
     console.error("Get my interviews error:", error.response?.data || error.message);
     throw error;
   }
 };
 
-
-// --- GET INTERVIEW BY ID ---
-export const getInterviewById = async (interviewId: number): Promise<MockInterviewResponse> => {
+export const getInterviewById = async (interviewId: number): Promise<Interview> => {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("Token tapılmadı");
 
-    const response = await api.get(
+    const response = await api.get<Interview>(
       `/MockInterviews/my-interviews/${interviewId}`,
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -101,8 +96,6 @@ export const getInterviewById = async (interviewId: number): Promise<MockIntervi
     throw error;
   }
 };
-
-
 
 
 export const retryInterview = async (interviewId: number) => {
@@ -126,21 +119,15 @@ export const retryInterview = async (interviewId: number) => {
   }
 };
 
-export const getStreak = async (): Promise<number | null> => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("Token tapılmadı");
+export const getStreak = async (): Promise<Streak> => {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Token tapılmadı");
 
-    const response = await api.get("/MockInterviews/streak", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const response = await api.get("/MockInterviews/streak", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    // Əgər server sadəcə streak sayını qaytarırsa:
-    return response.data; 
-  } catch (err: any) {
-    console.error("Streak gətirilərkən xəta baş verdi:", err);
-    return null;
-  }
+  return response.data;
 };

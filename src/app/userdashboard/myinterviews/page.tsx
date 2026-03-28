@@ -28,9 +28,11 @@ interface Interview {
   targetJobName?: string;
 }
 
-interface Streak {
+export interface Streak {
   currentStreak: number;
   longestStreak: number;
+   practicedToday: boolean;
+
 }
 
 const Page: React.FC = () => {
@@ -54,6 +56,7 @@ const Page: React.FC = () => {
     try {
       setLoading(true);
       const data = await getMyInterviews({ page: pageNumber, pageSize });
+      console.log(data);
       setAllInterviews(data);
     } catch (err) {
       console.error(err);
@@ -61,6 +64,8 @@ const Page: React.FC = () => {
       setLoading(false);
     }
   };
+
+  
 
   const handleRetry = async (id: number) => {
     try {
