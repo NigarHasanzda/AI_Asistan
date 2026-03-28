@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { getInterviewById } from "@/services/MockInterview";
-import api from "@/libs/api";
+import api from "@/services/api";
 import { useParams, useRouter } from "next/navigation";
 import { 
   ArrowLeft, 

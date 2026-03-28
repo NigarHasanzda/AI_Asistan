@@ -1,4 +1,4 @@
-import api from "@/libs/api";
+import api from "@/services/api";
 import { CreateInternshipDto } from "@/types/internship";
 import { MatchedInternshipParams } from "@/types/Student";
 

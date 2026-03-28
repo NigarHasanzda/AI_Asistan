@@ -6,7 +6,7 @@ import {
   ExternalLink, ShieldCheck, Camera, Save,
   Mail, Send, GraduationCap, Trash, Edit2, User, Calendar
 } from "lucide-react";
-import api from "@/libs/api";
+import api from "@/services/api";
 import { deleteAccount } from "@/services/Auth";
 import { CreateExperience, CreateProject, CreateStudentSkill } from "@/services/CreateStudent";
 import { deleteStudentSkill, updateFullStudentProfile } from "@/services/StudentProfile";

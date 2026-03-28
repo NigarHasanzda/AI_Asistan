@@ -1,5 +1,5 @@
 // services/Login.ts
-import api from "@/libs/api";
+import api from "@/services/api";
 import { LoginRequest, LoginResponse } from "@/types/login";
 
 export const UserLogin = async (

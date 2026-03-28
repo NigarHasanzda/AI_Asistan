@@ -1,4 +1,4 @@
-import api from "@/libs/api";
+import api from "@/services/api";
 import { CreateProfileRequest, CreateProfileResponse } from "@/types/register";
 
 export const CreateStudentProfile = async (

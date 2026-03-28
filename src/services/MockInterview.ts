@@ -1,5 +1,5 @@
 import { Streak } from "@/app/userdashboard/myinterviews/page";
-import api from "@/libs/api";
+import api from "@/services/api";
 import { Interview, MockInterviewResponse, MyInterviewsParams } from "@/types/interview";
 
 // --- START MOCK INTERVIEW ---

@@ -1,5 +1,5 @@
 // services/Leaderboards.ts
-import api from "@/libs/api"; // axios instance
+import api from "@/services/api"; // axios instance
 
 export const getLeaderboards = async (targetJobId?: number) => {
   if (typeof window === "undefined") return null;

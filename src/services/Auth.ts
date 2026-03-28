@@ -1,5 +1,5 @@
 
-import api from "@/libs/api";
+import api from "@/services/api";
 import { RegisterErrorResponse, RegisterRequest, RegisterSuccessResponse } from "@/types/register";
 import { jwtDecode } from "jwt-decode";
 

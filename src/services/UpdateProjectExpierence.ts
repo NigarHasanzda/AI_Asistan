@@ -1,5 +1,5 @@
 // services/UpdateStudent.ts
-import api from "@/libs/api";
+import api from "@/services/api";
 
 // --- UPDATE EXPERIENCE ---
 export const updateExperience = async (id: number, data: {

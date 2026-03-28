@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import api from "@/libs/api";
+import api from "@/services/api";
 import { useRouter } from "next/navigation";
 import { 
   Code2, 
