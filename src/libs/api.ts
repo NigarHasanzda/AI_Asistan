@@ -5,16 +5,12 @@ const api = axios.create({
   baseURL: "https://khalida06-001-site1.ntempurl.com/api",
 });
 
-api.interceptors.request.use((config) => {
-
+// token yalnız browserdə varsa əlavə et
+if (typeof window !== "undefined") {
   const token = localStorage.getItem("token");
-  console.log("Interceptor içində token:", token);
-
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
-
-  return config;
-});
+}
 
 export default api;
