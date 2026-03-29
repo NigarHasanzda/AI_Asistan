@@ -20,12 +20,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="flex min-h-fit bg-[#F8FAFC]" suppressHydrationWarning={true}>
+      <body className="flex min-h-fit bg-[#F8FAFC]" suppressHydrationWarning>
         {/* Sidebar bura əlavə olunur */}
         <Sidebar />
         
         {/* Kontent sahəsi sidebarın eni qədər (280px) soldan boşluq buraxmalıdır */}
-        <div className=" flex-grow ml-[290px]">
+        <div className=" flex-grow ">
           <HeaderWrapper />
           <main className="p-7" >
             {children}

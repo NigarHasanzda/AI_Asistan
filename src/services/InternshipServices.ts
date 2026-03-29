@@ -43,22 +43,15 @@ export const getCompanyInternships = async (params: any = {}) => {
 
 
 export const addSkillToInternship = async (internshipId: number, skill: string) => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const response = await api.post(`/Internships/${internshipId}/skills`, skill, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Skill əlavə edilərkən xəta:", error);
-    console.error("Backend error:", error.response?.data);
-    throw error;
-  }
+  const token = localStorage.getItem("token");
+  // Skill-i dırnaq içində string kimi göndərmək üçün JSON.stringify istifadə edirik
+  const response = await api.post(`/Internships/${internshipId}/skills`, JSON.stringify(skill), {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
 };
 
 export const deleteInternship = async (internshipId: number) => {
