@@ -1,11 +1,13 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
-import { Users, Pencil, Plus, X, Lock, Unlock, CheckCircle2, AlertCircle, BarChart3 } from "lucide-react";
+import { Users, Pencil, Plus, X, Lock, Unlock, CheckCircle2, BarChart3 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Yönləndirmə üçün
-import { 
-  getCompanyInternships, 
-  addSkillToInternship, 
+import { useRouter } from "next/navigation";
+
+import {
+  getCompanyInternships,
+  addSkillToInternship,
   deleteInternship,
   getInternshipById,
   updateInternship,
@@ -22,12 +24,12 @@ interface Internship {
   locationType?: number;
   startDate?: string;
   endDate?: string;
-  departmentId?: number;
   deadlineDate?: string;
+  departmentId?: number;
   skillIds?: number[];
   applicants?: number;
   skills: string[];
-  status?: string; 
+  status?: string;
 }
 
 interface InternshipCardProps extends Internship {
@@ -38,9 +40,20 @@ interface InternshipCardProps extends Internship {
 }
 
 // --- InternshipCard Komponenti ---
-const InternshipCard = ({ id, title, applicants = 0, skills, status, onAddSkill, onDelete, onView, onToggleStatus }: InternshipCardProps) => {
+const InternshipCard = ({
+  id,
+  title,
+  applicants = 0,
+  skills,
+  status,
+  onAddSkill,
+  onDelete,
+  onView,
+  onToggleStatus
+}: InternshipCardProps) => {
   const [newSkill, setNewSkill] = useState("");
   const isClosed = status === "Closed" || status === "Inactive";
+  const router = useRouter();
 
   const handleAddSkill = () => {
     if (!newSkill.trim() || isClosed) return;
@@ -48,11 +61,13 @@ const InternshipCard = ({ id, title, applicants = 0, skills, status, onAddSkill,
     setNewSkill("");
   };
 
+  const handleView = () => {
+    router.push(`/dashboard/listings/${id}`);
+  };
+
   return (
     <div className={`relative border rounded-[32px] p-6 transition-all duration-300 ${
-      isClosed 
-      ? "bg-gray-50 border-gray-200 opacity-80 grayscale-[0.2]" 
-      : "bg-white border-gray-100 shadow-sm hover:shadow-md"
+      isClosed ? "bg-gray-50 border-gray-200 opacity-80 grayscale-[0.2]" : "bg-white border-gray-100 shadow-sm hover:shadow-md"
     }`}>
       
       {/* Status Badge */}
@@ -68,9 +83,8 @@ const InternshipCard = ({ id, title, applicants = 0, skills, status, onAddSkill,
         )}
       </div>
 
-      {/* Action Buttons (Top Right) */}
+      {/* Action Buttons */}
       <div className="absolute top-5 right-6 flex gap-2">
-        {/* Analytics Button on Card */}
         <Link 
           href={`/dashboard/analytics/${id}`}
           className="p-2.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
@@ -78,7 +92,7 @@ const InternshipCard = ({ id, title, applicants = 0, skills, status, onAddSkill,
         >
           <BarChart3 size={18} />
         </Link>
-        
+
         <button
           onClick={() => onToggleStatus(id, status || "Active")}
           className={`p-2.5 rounded-full transition-colors ${
@@ -88,6 +102,7 @@ const InternshipCard = ({ id, title, applicants = 0, skills, status, onAddSkill,
         >
           {isClosed ? <Unlock size={18} /> : <Lock size={18} />}
         </button>
+
         <button
           onClick={() => confirm("Bu elanı silmək istədiyinizə əminsiniz?") && onDelete(id)}
           className="bg-red-50 text-red-500 p-2.5 rounded-full hover:bg-red-100 transition-colors"
@@ -125,14 +140,10 @@ const InternshipCard = ({ id, title, applicants = 0, skills, status, onAddSkill,
 
       <div className="flex items-center gap-3">
         <button
-          onClick={() => onView(id)}
-          className={`flex-1 py-3 border rounded-2xl text-sm font-bold transition-all ${
-            isClosed 
-            ? "border-gray-300 text-gray-400 hover:bg-gray-100" 
-            : "border-[#7C3AED] text-[#7C3AED] hover:bg-[#F5F3FF]"
-          }`}
+          onClick={handleView}
+          className="flex-1 py-3 border rounded-2xl text-sm font-bold transition-all"
         >
-          {isClosed ? "View & Reopen" : "Edit Details"}
+          View Details
         </button>
         {!isClosed && (
           <button onClick={() => onView(id)} className="p-3 text-gray-400 hover:bg-gray-100 rounded-xl transition-all border border-transparent hover:border-gray-200">
@@ -147,8 +158,6 @@ const InternshipCard = ({ id, title, applicants = 0, skills, status, onAddSkill,
 // --- ManageList Əsas Komponenti ---
 const page = () => {
   const [postings, setPostings] = useState<Internship[]>([]);
-  console.log(postings);
-  
   const [loading, setLoading] = useState(true);
   const [selectedInternship, setSelectedInternship] = useState<Internship | null>(null);
   const router = useRouter();
@@ -183,11 +192,10 @@ const page = () => {
         await closeInternship(id);
         alert("Elan uğurla bağlandı!");
       }
-      setSelectedInternship(null);
       fetchData();
+      setSelectedInternship(null);
     } catch (error: any) {
-      const errorMsg = error.response?.data?.message || "Xəta baş verdi. Deadline tarixini yoxlayın.";
-      alert("Uğursuz oldu: " + errorMsg);
+      alert(error.response?.data?.message || "Xəta baş verdi");
     }
   };
 
@@ -195,39 +203,38 @@ const page = () => {
     try {
       const internship = await getInternshipById(id);
       setSelectedInternship({ ...internship, id, skills: internship.skills || [] });
-    } catch (error) { 
-      console.error("View error:", error); 
-    }
+    } catch (error) { console.error("View error:", error); }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    setSelectedInternship(prev => prev ? { ...prev, [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value } : null);
   };
 
   const handleUpdate = async () => {
     if (!selectedInternship?.id) return;
+
     try {
       const updateData = {
-        title: selectedInternship.title.trim(),
-        description: selectedInternship.description?.trim(),
+        title: selectedInternship.title?.trim() || "",
+        description: selectedInternship.description?.trim() || "",
         isPaid: selectedInternship.isPaid ?? true,
         locationType: Number(selectedInternship.locationType) || 0,
         startDate: selectedInternship.startDate || new Date().toISOString(),
         endDate: selectedInternship.endDate || new Date().toISOString(),
         deadlineDate: selectedInternship.deadlineDate || new Date().toISOString(),
         departmentId: Number(selectedInternship.departmentId) || 1,
-        skillIds: selectedInternship.skillIds?.length ? selectedInternship.skillIds.map(Number) : [1]
+        skillIds: selectedInternship.skillIds?.length ? selectedInternship.skillIds.map(Number) : [],
       };
+
       await updateInternship(selectedInternship.id, updateData);
-      alert("Məlumatlar yeniləndi!");
+      alert("Məlumatlar uğurla yeniləndi!");
       setSelectedInternship(null);
       fetchData();
-    } catch (error) { 
-      alert("Yeniləmə uğursuz oldu."); 
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Yeniləmə uğursuz oldu");
+      console.error("Update error:", error);
     }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target;
-    setSelectedInternship(prev => prev ? {
-      ...prev, [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value
-    } : null);
   };
 
   return (
@@ -274,7 +281,6 @@ const page = () => {
                 <h2 className="text-2xl font-black text-gray-900">Internship Settings</h2>
                 <p className="text-gray-500 text-sm">ID: #{selectedInternship.id} • Status: {selectedInternship.status}</p>
               </div>
-              {/* Analytics Shortcut in Modal */}
               <button 
                 onClick={() => router.push(`/dashboard/analytics/${selectedInternship.id}`)}
                 className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-all"
@@ -284,27 +290,25 @@ const page = () => {
             </div>
 
             <div className="space-y-5">
+              {/* Title */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-400 uppercase ml-1">Title</label>
                 <input name="title" value={selectedInternship.title} onChange={handleInputChange} className="w-full border-gray-200 border rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-[#7C3AED]" />
               </div>
-              {/* ... digər inputlar eynidir ... */}
+              {/* Description */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-400 uppercase ml-1">Description</label>
                 <textarea name="description" value={selectedInternship.description} onChange={handleInputChange} rows={3} className="w-full border-gray-200 border rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-[#7C3AED]" />
               </div>
-              
-              <div className="grid grid-cols-2 gap-5">
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-gray-400 uppercase ml-1">Deadline</label>
-                  <input type="date" name="deadlineDate" value={selectedInternship.deadlineDate?.split('T')[0]} onChange={handleInputChange} className="w-full border-gray-200 border rounded-2xl px-5 py-4" />
-                </div>
-                <div className="space-y-1 pt-6">
-                   <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl h-full border border-gray-100">
-                    <input type="checkbox" id="isPaidM" name="isPaid" checked={selectedInternship.isPaid} onChange={handleInputChange} className="w-5 h-5 accent-[#7C3AED]" />
-                    <label htmlFor="isPaidM" className="text-sm font-bold text-gray-700">Paid</label>
-                  </div>
-                </div>
+              {/* Deadline */}
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-gray-400 uppercase ml-1">Deadline</label>
+                <input type="date" name="deadlineDate" value={selectedInternship.deadlineDate?.split('T')[0]} onChange={handleInputChange} className="w-full border-gray-200 border rounded-2xl px-5 py-4" />
+              </div>
+              {/* Paid Checkbox */}
+              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                <input type="checkbox" name="isPaid" checked={selectedInternship.isPaid} onChange={handleInputChange} className="w-5 h-5 accent-[#7C3AED]" />
+                <label className="text-sm font-bold text-gray-700">Paid</label>
               </div>
             </div>
 

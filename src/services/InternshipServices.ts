@@ -108,6 +108,8 @@ export const updateInternship = async (id: number, data: any) => {
   }
 };
 
+
+
 // Internship-i bağlamaq (Close)
 export const closeInternship = async (internshipId: number) => {
   try {
