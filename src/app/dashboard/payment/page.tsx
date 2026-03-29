@@ -26,7 +26,6 @@ const page = () => {
     const handlePay = async () => {
         try {
             setLoading(true);
-            // Backend 4 rəqəmli il tələb edir (məs: 26 -> 2026)
             const fixedYear = form.expYear.length === 2 ? `20${form.expYear}` : form.expYear;
             
             const payload = {
@@ -46,16 +45,14 @@ const page = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 font-sans">
-            {/* Background Decor */}
+        <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center  font-sans">
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[700px] h-[500px] bg-indigo-100/50 blur-[120px] rounded-full" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-100/50 blur-[120px] rounded-full" />
             </div>
 
             <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-                
-                {/* LEFT SIDE: Visual Card & Info */}
+            
                 <div className="space-y-8">
                     <div>
                         <motion.div 
@@ -73,8 +70,6 @@ const page = () => {
                             Unlock all premium interview features and stand out from the competition.
                         </p>
                     </div>
-
-                    {/* VIRTUAL CARD */}
                     <motion.div 
                         initial={{ rotateY: -20, opacity: 0 }}
                         animate={{ rotateY: 0, opacity: 1 }}
@@ -82,7 +77,6 @@ const page = () => {
                     >
                         <div className={`relative w-full h-full transition-all duration-700 preserve-3d shadow-2xl rounded-[24px] bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-8 text-white overflow-hidden ${focusedField === 'cvc' ? '[transform:rotateY(180deg)]' : ''}`}>
                             
-                            {/* Front Side */}
                             <div className="absolute inset-0 p-8 flex flex-col justify-between backface-hidden">
                                 <div className="flex justify-between items-start">
                                     <div className="w-12 h-10 bg-amber-400/20 rounded-lg flex items-center justify-center border border-amber-400/30">
@@ -111,8 +105,6 @@ const page = () => {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Back Side (CVC) */}
                             <div className="absolute inset-0 bg-slate-800 flex flex-col py-8 [transform:rotateY(180deg)] backface-hidden">
                                 <div className="w-full h-12 bg-slate-900 mt-4" />
                                 <div className="px-8 mt-6">
@@ -127,8 +119,6 @@ const page = () => {
                         </div>
                     </motion.div>
                 </div>
-
-                {/* RIGHT SIDE: Payment Form */}
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -214,8 +204,6 @@ const page = () => {
                     </div>
                 </motion.div>
             </div>
-
-            {/* CSS Helper for 3D Flip */}
             <style jsx global>{`
                 .perspective-1000 { perspective: 1000px; }
                 .preserve-3d { transform-style: preserve-3d; }
@@ -224,8 +212,6 @@ const page = () => {
         </div>
     );
 };
-
-// Simple Arrow Component since it wasn't imported
 const FiArrowRight = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
 );
