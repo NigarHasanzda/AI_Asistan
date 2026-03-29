@@ -32,3 +32,10 @@ export interface UploadPhotoResponse {
   message: string;
   fileUrl: string; // serverdən gələn fayl linki
 }
+
+
+export interface DecideApplicationRequest {
+  applicationId: number;
+  isAccepted: boolean;
+  reason?: string;
+}

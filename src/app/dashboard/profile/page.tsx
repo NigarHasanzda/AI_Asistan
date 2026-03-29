@@ -20,6 +20,8 @@ interface CompanyData {
 const CompanyProfilePage = () => {
   const [company, setCompany] = useState<CompanyData | null>(null);
   const [loading, setLoading] = useState(true);
+  console.log(company);
+  
   const [editMode, setEditMode] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 

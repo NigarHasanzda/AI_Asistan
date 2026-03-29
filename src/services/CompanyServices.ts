@@ -3,7 +3,8 @@ import {
   CreateCompanyRequest, 
   CreateCompanyResponse, 
   UploadPhotoResponse,
-  CompanyResponse // bunu type-larda əlavə etməlisən
+  CompanyResponse, // bunu type-larda əlavə etməlisən
+  DecideApplicationRequest
 } from "@/types/company";
 
 export const createCompany = async (
@@ -106,5 +107,77 @@ export const updateCompany = async (
     }
   );
 
+  return response.data;
+};
+
+export const decideApplication = async (
+  data: DecideApplicationRequest,
+  token: string
+): Promise<any> => {
+
+  // ❗ Əgər reject edirsənsə (isAccepted = false) → reason mütləqdir
+  if (!data.isAccepted && (!data.reason || data.reason.trim() === "")) {
+    throw new Error("Reject etdikdə reason yazmaq məcburidir");
+  }
+
+  // ❗ Əgər accept edirsənsə → reason göndərməyə ehtiyac yoxdur
+  const payload = {
+    applicationId: data.applicationId,
+    isAccepted: data.isAccepted,
+    ...(data.isAccepted ? {} : { reason: data.reason }) // yalnız false olanda əlavə olunur
+  };
+
+  const response = await api.post(
+    "/Applications/decide",
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
+
+
+
+export const shortlistApplication = async (
+  internshipId: number,
+  applicationId: number,
+  token?: string
+) => {
+  try {
+    const headers = token
+      ? { Authorization: `Bearer ${token}` }
+      : undefined;
+
+    const response = await api.patch(
+      `/Internships/${internshipId}/applications/${applicationId}/shortlist`,
+      {},
+      { headers }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Shortlist error:", error);
+    throw error;
+  }
+};
+
+
+
+export const removeShortlistApplication = async (
+  internshipId: number,
+  applicationId: number,
+  token: string
+) => {
+  const response = await api.patch(
+    `/Internships/${internshipId}/applications/${applicationId}/remove-shortlist`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   return response.data;
 };

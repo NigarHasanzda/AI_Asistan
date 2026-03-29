@@ -66,87 +66,100 @@ const InternshipCard = ({
   };
 
   return (
-    <div className={`relative border rounded-[32px] p-6 transition-all duration-300 ${
-      isClosed ? "bg-gray-50 border-gray-200 opacity-80 grayscale-[0.2]" : "bg-white border-gray-100 shadow-sm hover:shadow-md"
+<div className={`group relative flex flex-col h-full border-2 transition-all duration-500 rounded-[28px] p-6 ${
+      isClosed 
+        ? "bg-slate-50/50 border-dashed border-slate-200 opacity-75" 
+        : "bg-white border-transparent shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1"
     }`}>
       
-      {/* Status Badge */}
-      <div className="absolute top-5 left-6">
-        {isClosed ? (
-          <span className="bg-gray-200 text-gray-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1.5">
-            <Lock size={12} /> Closed
-          </span>
-        ) : (
-          <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1.5">
-            <CheckCircle2 size={12} /> Active
-          </span>
-        )}
+      {/* Header: Status & Actions */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          {isClosed ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-200 text-slate-600 text-[11px] font-bold uppercase tracking-wider">
+              <Lock size={13} strokeWidth={2.5} /> Closed
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 text-[11px] font-bold uppercase tracking-wider animate-pulse-subtle">
+              <CheckCircle2 size={13} strokeWidth={2.5} /> Active
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <Link 
+            href={`/dashboard/analytics/${id}`}
+            className="p-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
+            title="Analytics"
+          >
+            <BarChart3 size={18} />
+          </Link>
+          <button
+            onClick={() => onToggleStatus(id, status || "Active")}
+            className={`p-2 rounded-xl transition-all ${
+              isClosed ? "bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-800 hover:text-white"
+            }`}
+          >
+            {isClosed ? <Unlock size={18} /> : <Lock size={18} />}
+          </button>
+          <button
+            onClick={() => confirm("Bu elanı silmək istədiyinizə əminsiniz?") && onDelete(id)}
+            className="p-2 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+          >
+            <X size={18} />
+          </button>
+        </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="absolute top-5 right-6 flex gap-2">
-        <Link 
-          href={`/dashboard/analytics/${id}`}
-          className="p-2.5 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
-          title="View Analytics"
-        >
-          <BarChart3 size={18} />
-        </Link>
-
-        <button
-          onClick={() => onToggleStatus(id, status || "Active")}
-          className={`p-2.5 rounded-full transition-colors ${
-            isClosed ? "bg-slate-100 text-slate-500 hover:bg-slate-200" : "bg-orange-50 text-orange-500 hover:bg-orange-100"
-          }`}
-          title={isClosed ? "Reopen Listing" : "Close Listing"}
-        >
-          {isClosed ? <Unlock size={18} /> : <Lock size={18} />}
-        </button>
-
-        <button
-          onClick={() => confirm("Bu elanı silmək istədiyinizə əminsiniz?") && onDelete(id)}
-          className="bg-red-50 text-red-500 p-2.5 rounded-full hover:bg-red-100 transition-colors"
-        >
-          <X size={18} />
-        </button>
+      {/* Content Section */}
+      <div className="flex-1">
+        <h3 className={`text-xl font-extrabold mb-2 leading-tight tracking-tight transition-colors ${
+          isClosed ? "text-slate-400" : "text-slate-900"
+        }`}>
+          {title}
+        </h3>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-indigo-50/50 border border-indigo-100 text-indigo-700 mb-6">
+          <Users size={16} strokeWidth={2.5} />
+          <span className="text-sm font-bold">{applicants} Applicants</span>
+        </div>
       </div>
 
-      <div className="mt-10">
-        <h3 className={`text-[20px] font-bold mb-1 pr-16 leading-tight ${isClosed ? "text-gray-500" : "text-gray-900"}`}>{title}</h3>
-        <p className="text-gray-400 text-sm mb-4 line-clamp-1 italic">
-          {skills.length ? skills.join(" • ") : "No skills added yet"}
-        </p>
-      </div>
-
-      <div className="flex items-center gap-2 text-gray-500 text-sm mb-6 bg-gray-50 w-fit px-3 py-1 rounded-lg">
-        <Users size={16} />
-        <span className="font-medium">{applicants} Applicants</span>
-      </div>
-
+      {/* Quick Add Skill - Only visible when Active */}
       {!isClosed && (
-        <div className="flex gap-2 mb-6">
+        <div className="relative flex items-center mb-6 group/input">
           <input
             type="text"
             value={newSkill}
             onChange={(e) => setNewSkill(e.target.value)}
             placeholder="Quick add skill..."
-            className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-[#7C3AED]/20 outline-none transition-all"
+            className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-4 pr-12 py-3 text-sm focus:bg-white focus:ring-4 focus:ring-indigo-50 focus:border-indigo-400 outline-none transition-all placeholder:text-slate-400"
           />
-          <button onClick={handleAddSkill} className="bg-[#7C3AED] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#5b1dbf] transition-colors">
-            Add
+          <button 
+            onClick={handleAddSkill} 
+            className="absolute right-2 p-1.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors"
+          >
+            <Plus size={18} />
           </button>
         </div>
       )}
 
-      <div className="flex items-center gap-3">
+      {/* Footer Buttons */}
+      <div className="flex items-center gap-3 mt-auto">
         <button
           onClick={handleView}
-          className="flex-1 py-3 border rounded-2xl text-sm font-bold transition-all"
+          className={`flex-[3] py-3.5 rounded-2xl text-[14px] font-bold tracking-wide transition-all ${
+            isClosed 
+            ? "bg-slate-200 text-slate-500 cursor-not-allowed" 
+            : "bg-slate-900 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-100 hover:shadow-indigo-200"
+          }`}
         >
           View Details
         </button>
         {!isClosed && (
-          <button onClick={() => onView(id)} className="p-3 text-gray-400 hover:bg-gray-100 rounded-xl transition-all border border-transparent hover:border-gray-200">
+          <button 
+            onClick={() => onView(id)} 
+            className="flex-1 flex justify-center py-3.5 bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 rounded-2xl transition-all"
+          >
             <Pencil size={20} />
           </button>
         )}

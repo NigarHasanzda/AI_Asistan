@@ -19,7 +19,7 @@ const menuItems = [
   { name: "Dashboard", icon: <SpaceDashboardOutlined />, path: "/dashboard" },
   { name: "Post an Internship", icon: <PostAddOutlined />, path: "/dashboard/post" },
   { name: "Manage Listings", icon: <ListAltOutlined />, path: "/dashboard/listings" },
-  { name: "Applicant Analytics", icon: <AnalyticsOutlined />, path: "/dashboard/analytics" },
+  // { name: "Applicant Analytics", icon: <AnalyticsOutlined />, path: "/dashboard/analytics" },
   { name: "Buy Premium", icon: <AnalyticsOutlined />, path: "/dashboard/payment" },
   { name: "Company Profile", icon: <AccountCircleOutlined />, path: "/dashboard/profile" },
 ];
