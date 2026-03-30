@@ -7,7 +7,7 @@ import Footer from "./Footer";
 export default function FooterWrapper() {
   const pathname = usePathname();
 
-  const hideFooter = pathname.startsWith("/dashboard") || pathname.startsWith("/reset-password") || pathname === "/login" || pathname === "/register" || pathname.startsWith("/register/") || pathname.startsWith("/login/")|| pathname.startsWith("/userdashboard") || pathname.startsWith("/userdashboard/") || pathname.startsWith("/password") || pathname.startsWith("/password/"); 
+  const hideFooter = pathname.startsWith("/dashboard")|| pathname.startsWith("/admin") || pathname.startsWith("/reset-password") || pathname === "/login" || pathname === "/register" || pathname.startsWith("/register/") || pathname.startsWith("/login/")|| pathname.startsWith("/userdashboard") || pathname.startsWith("/userdashboard/") || pathname.startsWith("/password") || pathname.startsWith("/password/"); 
 
   if (hideFooter) return null;
 

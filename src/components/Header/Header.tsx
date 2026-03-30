@@ -57,7 +57,7 @@ export default function Header() {
 
     switch (normalizedRole) {
       case "admin":
-        router.push("/admin/dashboard");
+        router.push("/admindashboard");
         break;
       case "student":
         router.push("/userdashboard");
