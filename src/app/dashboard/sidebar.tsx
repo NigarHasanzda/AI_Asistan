@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   SpaceDashboardOutlined,
   PostAddOutlined,
@@ -27,12 +27,19 @@ const menuItems = [
 const Sidebar = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   // Səhifə dəyişəndə mobil menyunu bağla
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
 
+
+    const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    router.push("/login");
+  };
   // Sidebar-ın daxili komponenti (təkrar istifadə üçün)
   const SidebarContent = () => (
     <>
@@ -77,14 +84,15 @@ const Sidebar = () => {
       </nav>
 
       {/* Alt Profil Hissəsi */}
-      <div className="mt-auto border-t border-gray-100 pt-6">
+      <div
+       className="mt-auto border-t border-gray-100 pt-6">
         <div className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 border border-gray-100">
           <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-indigo-600 font-black border border-indigo-50">
             A
           </div>
           <div className="flex-grow overflow-hidden">
             <h4 className="text-sm font-bold text-gray-900 truncate">Admin User</h4>
-            <button className="text-[11px] text-gray-400 hover:text-red-500 font-bold flex items-center gap-1 transition-colors uppercase tracking-tighter">
+            <button onClick={handleLogout} className="text-[11px] text-gray-400 hover:text-red-500 font-bold flex items-center gap-1 transition-colors uppercase tracking-tighter">
               <LogoutOutlined sx={{ fontSize: 12 }} />
               Sign out
             </button>
