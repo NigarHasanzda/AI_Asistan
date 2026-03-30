@@ -18,6 +18,8 @@ export default function StudentProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("experience");
+  console.log(profile);
+  
 
   console.log(profile)
   // --- MODALS STATES ---

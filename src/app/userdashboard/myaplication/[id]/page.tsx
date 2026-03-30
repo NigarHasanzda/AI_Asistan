@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getApplicationById } from "@/services/Apply";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer,
-  PieChart, Pie, Cell 
+  PieChart, Pie, Cell
 } from "recharts";
-import { 
-  FiArrowLeft, FiBriefcase, FiCalendar, FiCpu, 
-  FiStar, FiCode, FiExternalLink, 
+import {
+  FiArrowLeft, FiBriefcase, FiCalendar, FiCpu,
+  FiStar, FiCode, FiExternalLink,
   FiTarget, FiAward, FiLayers, FiBarChart2
 } from "react-icons/fi";
 
@@ -22,6 +22,7 @@ const Page = () => {
   const [application, setApplication] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
+
   // ✅ Hydration Shield: Server və Client arasındakı fərqi aradan qaldırır
   const [mounted, setMounted] = useState(false);
 
@@ -46,10 +47,10 @@ const Page = () => {
   if (!mounted || loading) {
     return (
       <div className="min-h-screen bg-[#F5F3FF] flex items-center justify-center">
-        <motion.div 
+        <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-          className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-500 rounded-full" 
+          className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-500 rounded-full"
         />
       </div>
     );
@@ -94,10 +95,10 @@ const Page = () => {
       </div>
 
       <div className="max-w-[90%] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
+
         {/* ── LEFT COLUMN ── */}
         <div className="lg:col-span-8 space-y-8">
-          
+
           {/* Main Info Card */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white p-8 rounded-[40px] shadow-sm border border-indigo-50 relative overflow-hidden">
             <div className="relative z-10">
@@ -131,7 +132,7 @@ const Page = () => {
             </div>
 
             <div className="bg-white p-6 rounded-[36px] border border-indigo-50 shadow-sm flex flex-col items-center justify-center relative min-h-[320px]">
-               <h3 className="absolute top-6 left-6 text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <h3 className="absolute top-6 left-6 text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                 <FiStar className="text-amber-400" /> Uyğunluq dərəcəsi
               </h3>
               <ResponsiveContainer width="100%" height={200}>
@@ -151,33 +152,33 @@ const Page = () => {
 
           {/* Projects & Experience */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             <div className="space-y-4">
-                <h3 className="font-black text-[#1E1B4B] flex items-center gap-2 px-2"><FiLayers className="text-indigo-500"/> Layihələr</h3>
-                {application.projects?.length > 0 ? application.projects.map((p:any) => (
-                  <div key={p.id} className="bg-white p-5 rounded-3xl border border-indigo-50 shadow-sm">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="font-bold text-slate-700">{p.name}</span>
-                        {p.projectUrl && <a href={p.projectUrl} target="_blank" rel="noreferrer"><FiExternalLink className="text-indigo-300 hover:text-indigo-600"/></a>}
-                    </div>
-                    <p className="text-xs text-slate-500 line-clamp-2">{p.description}</p>
+            <div className="space-y-4">
+              <h3 className="font-black text-[#1E1B4B] flex items-center gap-2 px-2"><FiLayers className="text-indigo-500" /> Layihələr</h3>
+              {application.projects?.length > 0 ? application.projects.map((p: any) => (
+                <div key={p.id} className="bg-white p-5 rounded-3xl border border-indigo-50 shadow-sm">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-slate-700">{p.name}</span>
+                    {p.projectUrl && <a href={p.projectUrl} target="_blank" rel="noreferrer"><FiExternalLink className="text-indigo-300 hover:text-indigo-600" /></a>}
                   </div>
-                )) : <p className="text-xs text-slate-400 px-2 italic">Layihə qeyd edilməyib.</p>}
-             </div>
-             <div className="space-y-4">
-                <h3 className="font-black text-[#1E1B4B] flex items-center gap-2 px-2"><FiAward className="text-indigo-500"/> Təcrübə</h3>
-                {application.experiences?.length > 0 ? application.experiences.map((e:any) => (
-                  <div key={e.id} className="bg-white p-5 rounded-3xl border border-indigo-50 shadow-sm">
-                    <h4 className="font-bold text-slate-700 text-sm">{e.designation}</h4>
-                    <p className="text-xs font-bold text-indigo-400">{e.companyName}</p>
-                  </div>
-                )) : <p className="text-xs text-slate-400 px-2 italic">Təcrübə qeyd edilməyib.</p>}
-             </div>
+                  <p className="text-xs text-slate-500 line-clamp-2">{p.description}</p>
+                </div>
+              )) : <p className="text-xs text-slate-400 px-2 italic">Layihə qeyd edilməyib.</p>}
+            </div>
+            <div className="space-y-4">
+              <h3 className="font-black text-[#1E1B4B] flex items-center gap-2 px-2"><FiAward className="text-indigo-500" /> Təcrübə</h3>
+              {application.experiences?.length > 0 ? application.experiences.map((e: any) => (
+                <div key={e.id} className="bg-white p-5 rounded-3xl border border-indigo-50 shadow-sm">
+                  <h4 className="font-bold text-slate-700 text-sm">{e.designation}</h4>
+                  <p className="text-xs font-bold text-indigo-400">{e.companyName}</p>
+                </div>
+              )) : <p className="text-xs text-slate-400 px-2 italic">Təcrübə qeyd edilməyib.</p>}
+            </div>
           </div>
         </div>
 
         {/* ── RIGHT COLUMN ── */}
         <div className="lg:col-span-4 space-y-6">
-          
+
           {/* AI Feedback */}
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="bg-slate-900 p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden">
             <div className="relative z-10">
@@ -195,25 +196,21 @@ const Page = () => {
           {/* Technical Skills */}
           <div className="bg-white p-8 rounded-[40px] border border-indigo-50 shadow-sm">
             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
-              <FiCode className="text-indigo-500" size={14}/> Texniki Bacarıqlar
+              <FiCode className="text-indigo-500" size={14} /> Texniki Bacarıqlar
             </h3>
             <div className="flex flex-wrap gap-2">
-              {application.skills?.map((s:string) => (
-                <span key={s} className="px-4 py-2 bg-indigo-50/50 text-indigo-600 rounded-2xl text-[11px] font-black border border-indigo-100/50 hover:bg-indigo-50 transition-colors">
-                  {s}
+              {application.skills?.map((skill: { id: number; name: string }) => (
+                <span
+                  key={skill.id}
+                  className="px-4 py-2 bg-indigo-50/50 text-indigo-600 rounded-2xl text-[11px] font-black border border-indigo-100/50 hover:bg-indigo-50 transition-colors"
+                >
+                  {skill.name}
                 </span>
               ))}
             </div>
           </div>
 
           {/* Student Profile */}
-          <div className="bg-white p-8 rounded-[40px] border border-indigo-50 shadow-sm text-center">
-            <div className="w-24 h-24 bg-gradient-to-tr from-indigo-500 to-violet-500 rounded-[38%] mx-auto mb-4 flex items-center justify-center text-white text-3xl font-black shadow-lg shadow-indigo-100">
-              {application.fullName?.charAt(0)}
-            </div>
-            <h4 className="text-lg font-black text-[#1E1B4B]">{application.fullName}</h4>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">ID: {application.applicationId}</p>
-          </div>
 
         </div>
       </div>
