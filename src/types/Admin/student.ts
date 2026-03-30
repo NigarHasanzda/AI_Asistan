@@ -26,3 +26,15 @@ export interface GetStudentsResponse {
   totalCount: number;
   totalPages: number;
 }
+
+
+export interface StudentDetail {
+  id: number;
+  username: string;
+  fullname: string;
+  email: string;
+  photoUrl: string | null;
+  isPremium: boolean;
+  profileScore: number;
+  targetJobName: string | null;
+}

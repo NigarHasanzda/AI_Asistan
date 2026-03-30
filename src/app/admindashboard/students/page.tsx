@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Yönləndirmə üçün bunu əlavə etdik
 import { getAdminStudents } from "@/services/Admin/Students";
 import { GetTargetJobs } from "@/services/TargetJob";
 import { TargetJob } from "@/types/targetjob";
-import { Search, ChevronLeft, ChevronRight, Mail, Briefcase, X } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Mail, Briefcase, X, Eye } from "lucide-react";
 
 const Page = () => {
+  const router = useRouter(); // Router-i başladırıq
   const [students, setStudents] = useState<any[]>([]);
   const [targetJobs, setTargetJobs] = useState<TargetJob[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ const Page = () => {
     fetchJobs();
   }, []);
 
-  // --- Fetch Students (API: only keyword + pagination) ---
+  // --- Fetch Students ---
   useEffect(() => {
     const fetchStudents = async () => {
       setLoading(true);
@@ -37,7 +39,6 @@ const Page = () => {
           page,
           pageSize,
         });
-
         setStudents(res || []);
       } catch (err) {
         console.error("Fetch Students Error:", err);
@@ -50,7 +51,7 @@ const Page = () => {
     return () => clearTimeout(debounce);
   }, [keyword, page]);
 
-  // --- Frontend Filters (Job + Premium) ---
+  // --- Frontend Filters ---
   const filteredStudents = students.filter((s) => {
     const jobMatch =
       !targetJobId ||
@@ -64,7 +65,6 @@ const Page = () => {
     return jobMatch && premiumMatch;
   });
 
-  // --- Reset Filters ---
   const resetFilters = () => {
     setKeyword("");
     setTargetJobId("");
@@ -94,7 +94,7 @@ const Page = () => {
           <input
             type="text"
             placeholder="Ada görə axtarış..."
-            className="w-full pl-12 pr-12 py-3 bg-[#F4F7FE] border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all"
+            className="w-full pl-12 pr-12 py-3 bg-[#F4F7FE] border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all font-medium"
             onChange={(e) => { setKeyword(e.target.value); setPage(1); }}
             value={keyword}
           />
@@ -109,9 +109,8 @@ const Page = () => {
         </div>
 
         <div className="flex gap-3 w-full md:w-auto">
-          {/* Target Job Filter */}
           <select
-            className="flex-1 md:flex-none bg-[#F4F7FE] border-none p-3 px-5 rounded-2xl font-semibold text-sm cursor-pointer hover:bg-slate-100 transition-colors focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+            className="flex-1 md:flex-none bg-[#F4F7FE] border-none p-3 px-5 rounded-2xl font-semibold text-sm cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
             onChange={(e) => { 
               setTargetJobId(e.target.value ? Number(e.target.value) : ""); 
               setPage(1); 
@@ -124,9 +123,8 @@ const Page = () => {
             ))}
           </select>
 
-          {/* Premium Filter */}
           <select
-            className="flex-1 md:flex-none bg-[#F4F7FE] border-none p-3 px-5 rounded-2xl font-semibold text-sm cursor-pointer hover:bg-slate-100 transition-colors focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+            className="flex-1 md:flex-none bg-[#F4F7FE] border-none p-3 px-5 rounded-2xl font-semibold text-sm cursor-pointer hover:bg-slate-100 transition-all focus:ring-2 focus:ring-blue-500 outline-none"
             onChange={(e) => { setIsPremium(e.target.value); setPage(1); }}
             value={isPremium}
           >
@@ -135,10 +133,9 @@ const Page = () => {
             <option value="false">Yalnız Standart</option>
           </select>
 
-          {/* Reset Filters */}
           <button
             onClick={resetFilters}
-            className="bg-red-100 text-red-600 px-4 py-2 rounded-xl font-semibold hover:bg-red-200 transition-colors"
+            className="bg-red-50 text-red-600 px-5 py-3 rounded-2xl font-bold text-sm hover:bg-red-100 transition-colors"
           >
             Reset
           </button>
@@ -148,12 +145,12 @@ const Page = () => {
       {/* --- STUDENT LIST --- */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-          {[1,2,3].map(i => <div key={i} className="h-48 bg-white rounded-3xl" />)}
+          {[1,2,3,4,5,6].map(i => <div key={i} className="h-64 bg-white rounded-[30px]" />)}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredStudents.map((s) => (
-            <div key={s.id} className="bg-white p-6 rounded-[30px] shadow-sm border border-transparent hover:border-blue-200 transition-all group relative overflow-hidden">
+            <div key={s.id} className="bg-white p-6 rounded-[30px] shadow-sm border border-transparent hover:border-indigo-100 transition-all duration-300 group relative overflow-hidden">
               
               {/* Premium Badge */}
               <div className={`absolute top-0 right-0 px-4 py-1.5 rounded-bl-2xl text-[10px] font-black uppercase tracking-widest ${s.isPremium ? 'bg-amber-400 text-white' : 'bg-slate-100 text-slate-400'}`}>
@@ -161,27 +158,32 @@ const Page = () => {
               </div>
 
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-100">
+                <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 font-bold text-xl shadow-sm">
                   {s.fullname?.charAt(0)}
                 </div>
                 <div>
                   <h3 className="font-bold text-lg leading-tight">{s.fullname}</h3>
-                  <p className="text-indigo-500 text-sm font-semibold">@{s.username}</p>
+                  <p className="text-indigo-500 text-sm font-semibold italic">@{s.username}</p>
                 </div>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-3 mb-6">
                 <div className="flex items-center gap-3 text-slate-500">
                   <Mail size={16} className="text-slate-300" />
-                  <span className="text-sm truncate">{s.email}</span>
+                  <span className="text-sm truncate font-medium">{s.email}</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-500">
                   <Briefcase size={16} className="text-slate-300" />
-                  <span className="text-sm font-medium italic">{s.targetJobName || "Qeyd yoxdur"}</span>
+                  <span className="text-sm font-semibold text-slate-600">{s.targetJobName || "Qeyd yoxdur"}</span>
                 </div>
               </div>
 
-              <button className="mt-6 w-full py-2 bg-[#F4F7FE] hover:bg-indigo-600 hover:text-white text-indigo-600 rounded-xl font-bold text-sm transition-all">
+              {/* Yönləndirmə Düyməsi */}
+              <button 
+                onClick={() => router.push(`/admindashboard/students/${s.id}`)}
+                className="w-full py-3 bg-[#F4F7FE] hover:bg-indigo-600 hover:text-white text-indigo-600 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2"
+              >
+                <Eye size={16} />
                 Profilə Bax
               </button>
             </div>
@@ -194,19 +196,19 @@ const Page = () => {
         <button 
           disabled={page === 1}
           onClick={() => setPage(p => p - 1)}
-          className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-100 hover:bg-blue-500 hover:text-white disabled:opacity-30 transition-all"
+          className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-100 hover:bg-indigo-600 hover:text-white disabled:opacity-30 transition-all shadow-sm"
         >
           <ChevronLeft size={20} />
         </button>
         
-        <div className="flex items-center gap-2 bg-white px-4 py-1.5 rounded-xl border border-slate-100 shadow-sm font-bold">
-          Səhifə <span className="text-blue-600">{page}</span>
+        <div className="bg-white px-5 py-2 rounded-xl border border-slate-100 shadow-sm font-bold text-indigo-600">
+          {page}
         </div>
         
         <button 
           disabled={students.length < pageSize}
           onClick={() => setPage(p => p + 1)}
-          className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-100 hover:bg-blue-500 hover:text-white disabled:opacity-30 transition-all"
+          className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-100 hover:bg-indigo-600 hover:text-white disabled:opacity-30 transition-all shadow-sm"
         >
           <ChevronRight size={20} />
         </button>

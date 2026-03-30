@@ -1,4 +1,4 @@
-import { GetStudentsParams, GetStudentsResponse } from "@/types/Admin/student";
+import { GetStudentsParams, GetStudentsResponse, StudentDetail } from "@/types/Admin/student";
 import api from "../api";
 
 
@@ -23,6 +23,20 @@ export const getAdminStudents = async (params?: any) => {
     return response.data; // 🔥 birbaşa qaytarırıq
   } catch (error) {
     console.error("Get Students Error:", error);
+    throw error;
+  }
+};
+
+
+export const getStudentById = async (id: number): Promise<StudentDetail> => {
+  try {
+    const token = localStorage.getItem("token"); // əgər auth varsa
+    const response = await api.get(`/Admin/students/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Get Student By ID Error:", error);
     throw error;
   }
 };
