@@ -18,7 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const menuItems = [
   { name: "Dashboard", icon: <SpaceDashboardOutlined />, path: "/admindashboard" },
   { name: "Students", icon: <AnalyticsOutlined />, path: "/admindashboard/students" },
-  // { name: "Post an Internship", icon: <PostAddOutlined />, path: "/dashboard/post" },
+  { name: "Users ", icon: <PostAddOutlined />, path: "/admindashboard/users" },
   // { name: "Manage Listings", icon: <ListAltOutlined />, path: "/dashboard/listings" },
 
   // { name: "Company Profile", icon: <AccountCircleOutlined />, path: "/dashboard/profile" },
