@@ -24,6 +24,8 @@ const menuItems = [
   { name: " Application", icon: <ListAltOutlined />, path: "/admindashboard/application" },
 
   { name: "Internship  ", icon: <AccountCircleOutlined />, path: "/admindashboard/internship" },
+
+  { name: "Profile  ", icon: <AccountCircleOutlined />, path: "/admindashboard/profile" },
 ];
 
 const Sidebar = () => {
