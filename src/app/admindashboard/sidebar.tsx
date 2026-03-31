@@ -19,9 +19,11 @@ const menuItems = [
   { name: "Dashboard", icon: <SpaceDashboardOutlined />, path: "/admindashboard" },
   { name: "Students", icon: <AnalyticsOutlined />, path: "/admindashboard/students" },
   { name: "Users ", icon: <PostAddOutlined />, path: "/admindashboard/users" },
-  // { name: "Manage Listings", icon: <ListAltOutlined />, path: "/dashboard/listings" },
+  { name: " Company", icon: <ListAltOutlined />, path: "/admindashboard/company" },
 
-  // { name: "Company Profile", icon: <AccountCircleOutlined />, path: "/dashboard/profile" },
+  { name: " Application", icon: <ListAltOutlined />, path: "/admindashboard/application" },
+
+  { name: "Internship  ", icon: <AccountCircleOutlined />, path: "/admindashboard/internship" },
 ];
 
 const Sidebar = () => {
