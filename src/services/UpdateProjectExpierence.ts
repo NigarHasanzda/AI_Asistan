@@ -37,3 +37,29 @@ export const deleteProjectSkill = async (projectId: number, skillId: number) => 
   });
   return response.data;
 };
+
+
+export const deleteExperience = async (id: number) => {
+  const token = localStorage.getItem("token") || "";
+
+  const response = await api.delete(`/Experiences/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
+
+export const deleteProject = async (id: number) => {
+  const token = localStorage.getItem("token") || "";
+
+  const response = await api.delete(`/Projects/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};

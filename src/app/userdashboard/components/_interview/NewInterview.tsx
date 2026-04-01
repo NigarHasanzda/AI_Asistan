@@ -11,8 +11,10 @@ import {
   Zap, 
   ArrowRight,
   ShieldCheck,
-  Cpu
+  Cpu,
+  Loader2
 } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
 
 const NewInterview = () => {
   const router = useRouter();
@@ -53,34 +55,48 @@ const NewInterview = () => {
 
   const handleLaunch = async () => {
     setLoading(true);
+    const toastId = toast.loading(`Initializing ${mode} session...`);
 
     const modeMap: Record<string, number> = { Behavioral: 0, Technical: 1, Mixed: 2 };
     const levelMap: Record<string, number> = { Intern: 0, Junior: 1, Senior: 2 };
 
     try {
       const token = localStorage.getItem("token");
+      
+      if (!token) {
+        toast.error("Session expired. Please log in again.", { id: toastId });
+        router.push("/login");
+        return;
+      }
+
       const response = await api.post(
         "/MockInterviews",
         { 
           mode: modeMap[mode], 
           level: levelMap[difficulty], 
-          role: "General Software Engineer" // Role-u avtomatik təyin edirik
+          role: "General Software Engineer" 
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.data) {
+        toast.success("Interview generated successfully! Redirecting...", { id: toastId });
         router.push(`/userdashboard/interviews/${response.data}`);
+      } else {
+        throw new Error("Failed to retrieve interview ID.");
       }
-    } catch (error) {
-      console.error("Launch error:", error);
+    } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error.message || "An unexpected error occurred.";
+      console.error("Launch error:", errorMessage);
+      toast.error(` ${errorMessage}`, { id: toastId });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 lg:p-2">
+    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 lg:p-2 relative overflow-hidden">
+      <Toaster position="top-right" reverseOrder={false} />
       
       {/* Subtle Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
@@ -110,17 +126,18 @@ const NewInterview = () => {
                 {modes.map((m) => (
                   <button
                     key={m.id}
+                    disabled={loading}
                     onClick={() => setMode(m.id as any)}
-                    className={`w-full flex items-center gap-6 p-6 rounded-[32px] border-2 transition-all duration-300 group ${
+                    className={`w-full flex items-center gap-6 p-6 rounded-[32px] border-2 transition-all duration-300 group text-left ${
                       mode === m.id 
                       ? `border-indigo-600 bg-white shadow-2xl ${m.ring} ring-8` 
                       : "border-slate-100 bg-slate-50/50 hover:border-slate-200"
-                    }`}
+                    } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <div className={`w-14 h-14 ${m.bg} ${m.color} rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0`}>
                       <m.icon size={28} />
                     </div>
-                    <div className="text-left">
+                    <div>
                       <h4 className="text-lg font-bold text-slate-900">{m.title}</h4>
                       <p className="text-sm text-slate-400 font-medium leading-snug">{m.desc}</p>
                     </div>
@@ -138,19 +155,20 @@ const NewInterview = () => {
                    <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-lg">
                       <Cpu size={16} />
                    </div>
-                   <h3 className="text-xl font-bold text-slate-800 tracking-tight">Select Experience</h3>
+                   <h3 className="text-xl font-bold text-slate-800 tracking-tight">Select Experience Level</h3>
                 </div>
 
                 <div className="bg-slate-100/80 p-1.5 rounded-[28px] grid grid-cols-3 gap-1.5 border border-slate-200/50">
                   {["Intern", "Junior", "Senior"].map((d) => (
                     <button
                       key={d}
+                      disabled={loading}
                       onClick={() => setDifficulty(d as any)}
                       className={`py-4 rounded-[22px] text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${
                         difficulty === d 
                         ? "bg-white text-indigo-600 shadow-[0_10px_25px_-5px_rgba(79,70,229,0.2)] scale-[1.02]" 
                         : "text-slate-400 hover:text-slate-600"
-                      }`}
+                      } ${loading ? "cursor-not-allowed" : ""}`}
                     >
                       {d}
                     </button>
@@ -167,8 +185,11 @@ const NewInterview = () => {
                        <ShieldCheck size={20} />
                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">System Ready</span>
                     </div>
-                    <h2 className="text-2xl font-bold">Initializing {mode} <br /> Simulation for {difficulty}</h2>
-                    <p className="text-slate-400 text-xs font-medium">AI will generate custom questions based on your selection.</p>
+                    <h2 className="text-2xl font-bold italic tracking-tight">
+                      Initializing {mode} <br /> 
+                      Session for {difficulty}
+                    </h2>
+                    <p className="text-slate-400 text-xs font-medium">The AI engine will synthesize unique prompts tailored to your level.</p>
                  </div>
               </div>
 
@@ -180,7 +201,7 @@ const NewInterview = () => {
                   className="w-full bg-indigo-600 hover:bg-indigo-700 text-white p-7 rounded-[32px] font-black text-xl flex items-center justify-center gap-4 shadow-2xl shadow-indigo-200 transition-all hover:-translate-y-2 active:scale-95 disabled:opacity-50 group"
                 >
                   {loading ? (
-                    <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                    <Loader2 className="w-8 h-8 animate-spin" />
                   ) : (
                     <>
                       <span>Generate Interview</span>
@@ -192,7 +213,7 @@ const NewInterview = () => {
                 </button>
                 <div className="mt-6 flex items-center justify-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
                   <Zap size={14} className="text-amber-400" fill="currentColor" />
-                  Simulations take 5-10 seconds to build
+                  Simulations are built in 5-10 seconds
                 </div>
               </div>
             </div>

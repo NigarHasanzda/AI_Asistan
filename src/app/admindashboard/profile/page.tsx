@@ -112,7 +112,7 @@ const Page = () => {
         {activeTab === "info" && (
           <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden animate-in fade-in duration-500">
             <div className="p-8 space-y-6">
-              <InfoRow icon={<Fingerprint />} label="Admin ID" value={profile?.id} />
+              {/* <InfoRow icon={<Fingerprint />} label="Admin ID" value={profile?.id} /> */}
               <InfoRow icon={<User />} label="Username" value={profile?.username} />
               <InfoRow icon={<Mail />} label="Email Address" value={profile?.email} />
             </div>

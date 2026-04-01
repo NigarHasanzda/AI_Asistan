@@ -12,14 +12,14 @@ import { CreateExperience, CreateProject, CreateStudentSkill } from "@/services/
 import { deleteStudentSkill, updateFullStudentProfile } from "@/services/StudentProfile";
 import { GetTargetJobs } from "@/services/TargetJob";
 import { motion, AnimatePresence } from "framer-motion";
-import { deleteProjectSkill } from "@/services/UpdateProjectExpierence";
+import { deleteExperience, deleteProject, deleteProjectSkill } from "@/services/UpdateProjectExpierence";
 
 export default function StudentProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("experience");
   console.log(profile);
-  
+
 
   console.log(profile)
   // --- MODALS STATES ---
@@ -36,6 +36,10 @@ export default function StudentProfilePage() {
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const [updatingProfile, setUpdatingProfile] = useState(false);
+
+  const [deletingExpId, setDeletingExpId] = useState<number | null>(null);
+
+  const [deletingProjectId, setDeletingProjectId] = useState<number | null>(null);
 
   // --- SKILL STATES ---
   const [newSkill, setNewSkill] = useState("");
@@ -183,7 +187,7 @@ export default function StudentProfilePage() {
       name: proj.name,
       description: proj.description,
       projectUrl: proj.projectUrl,
-      skillNames: Array.isArray(proj.skills) ? proj.skills.join(", ") : ""
+ skillNames: proj.skills?.length ? proj.skills.map((s: any) => s.name).join(", ") : ""
     });
     setIsProjModalOpen(true);
   };
@@ -219,6 +223,52 @@ export default function StudentProfilePage() {
       window.location.href = "/login";
     } catch (err) { alert("Xəta!"); }
   };
+
+
+  const handleDeleteExperience = async (id: number) => {
+    if (!confirm("Bu experience-i silmək istədiyinə əminsən?")) return;
+
+    try {
+      setDeletingExpId(id);
+
+      await deleteExperience(id);
+
+      // UI update
+      setProfile((prev: any) => ({
+        ...prev,
+        experiences: prev.experiences.filter((exp: any) => exp.id !== id),
+      }));
+
+    } catch (error) {
+      console.error("Delete failed:", error);
+      alert("Silinmə zamanı xəta baş verdi!");
+    } finally {
+      setDeletingExpId(null);
+    }
+  };
+
+
+  const handleDeleteProject = async (id: number) => {
+  if (!confirm("Bu project-i silmək istədiyinə əminsən?")) return;
+
+  try {
+    setDeletingProjectId(id);
+
+    await deleteProject(id);
+
+    // UI update (project silinir)
+    setProfile((prev: any) => ({
+      ...prev,
+      projects: prev.projects.filter((p: any) => p.id !== id),
+    }));
+
+  } catch (error) {
+    console.error("Project delete failed:", error);
+    alert("Silinmə zamanı xəta baş verdi!");
+  } finally {
+    setDeletingProjectId(null);
+  }
+};
 
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
@@ -303,6 +353,8 @@ export default function StudentProfilePage() {
                               </div>
                             </div>
                             <button onClick={() => openEditExp(exp)} className="p-2 text-slate-300 hover:text-indigo-600 transition-colors"><Edit2 size={18} /></button>
+                            <button onClick={() => handleDeleteExperience(exp.id)} className="p-2 text-slate-300 hover:text-indigo-600 transition-colors"> sil</button>
+
                           </div>
                           <div className="bg-slate-50 rounded-[32px] p-8 text-slate-500 italic border border-slate-100 group-hover:bg-white group-hover:shadow-lg transition-all mt-4 leading-relaxed">
                             "{exp.description}"
@@ -366,6 +418,10 @@ export default function StudentProfilePage() {
                             <a href={proj.projectUrl} target="_blank" rel="noopener noreferrer" className="w-full inline-flex items-center justify-center gap-3 text-[11px] font-black text-white bg-slate-900 px-6 py-4 rounded-2xl uppercase tracking-widest hover:bg-indigo-600 transition-all">
                               Inspect Project <ExternalLink size={16} />
                             </a>
+                            <button onClick={()=>handleDeleteProject(proj.id)}>
+                              sil
+
+                            </button>
                           </div>
                         )) : (
                           <div className="col-span-full text-center py-20 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200 text-slate-400 font-bold">

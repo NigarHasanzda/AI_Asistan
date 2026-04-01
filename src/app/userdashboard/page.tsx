@@ -12,6 +12,7 @@ import {
 
 import { analyzeProfile, getStudentDashboard } from "@/services/StudentProfile";
 import { getStreak } from "@/services/MockInterview";
+import { useRouter } from "next/navigation";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -24,6 +25,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const router = useRouter();
 
   const fetchData = async (isInitial = true) => {
     if (!isInitial) setRefreshing(true);
@@ -297,7 +299,7 @@ const Page = () => {
                            <p className="text-sm font-black text-slate-900 group-hover:text-indigo-600 transition-colors">{intern.title}</p>
                            <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-tighter">{intern.companyName}</p>
                         </div>
-                        <FiExternalLink className="text-slate-300 group-hover:text-indigo-600 transition-all" />
+                        <FiExternalLink onClick={()=>router.push(`userdashboard/internships/${intern.internshipId}`)} className="text-slate-300 group-hover:text-indigo-600 transition-all" />
                      </div>
                   </div>
                 ))}

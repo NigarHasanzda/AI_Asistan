@@ -3,15 +3,17 @@
 import { getBookmarks, removeBookmark, applyToInternship } from "@/services/Apply";
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation"; // Yönləndirmə üçün əlavə edildi
 import { 
   FiBookmark, FiCalendar, 
   FiArrowRight, FiBriefcase, FiTrash2, FiLoader, 
-  FiCheckCircle, FiAlertCircle, FiX 
+  FiCheckCircle, FiAlertCircle, FiX, FiEye 
 } from "react-icons/fi";
 
 type ActionType = { id: number; type: "deleting" | "applying" };
 
 const Page = () => {
+  const router = useRouter(); // Router hook-u
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState<ActionType | null>(null);
@@ -81,13 +83,13 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F3FF] relative overflow-x-hidden selection:bg-indigo-100 selection:text-indigo-600 px-6 py-12">
-      {/* Background Gradients */}
+      {/* Background Gradients (Eyni qalır) */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[20%] w-[80%] h-[50%] bg-[#DDD6FE]/40 blur-[120px] rounded-full" />
         <div className="absolute bottom-[0%] right-[0%] w-[60%] h-[40%] bg-[#BAE6FD]/30 blur-[120px] rounded-full" />
       </div>
 
-      {/* Toast Notification */}
+      {/* Toast Notification (Eyni qalır) */}
       <AnimatePresence>
         {toast && (
           <motion.div
@@ -109,7 +111,7 @@ const Page = () => {
         )}
       </AnimatePresence>
 
-      {/* Confirm Modal */}
+      {/* Confirm Modal (Eyni qalır) */}
       <AnimatePresence>
         {showConfirm && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
@@ -141,12 +143,7 @@ const Page = () => {
       </AnimatePresence>
 
       <div className="max-w-[90%] mx-auto relative z-10">
-        {/* Header */}
-        <motion.header
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
+        <motion.header initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
           <div className="mb-4">
             <span className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-full text-xs font-bold tracking-wide">
               <FiBookmark size={12} /> BOOKMARKS
@@ -156,12 +153,9 @@ const Page = () => {
             Saved<br />
             <span className="text-indigo-500">Vacancies</span>
           </h1>
-          <p className="text-slate-500 font-medium">
-            {bookmarks.length} vacancies waiting in your list
-          </p>
+          <p className="text-slate-500 font-medium">{bookmarks.length} vacancies waiting in your list</p>
         </motion.header>
 
-        {/* List Content */}
         <div className="flex flex-col gap-4">
           <AnimatePresence mode="popLayout">
             {bookmarks.length > 0 ? (
@@ -180,7 +174,6 @@ const Page = () => {
                     className="group bg-white p-5 md:p-6 rounded-[32px] border border-[#E8E4FF] shadow-[0_2px_16px_0_rgba(129,140,248,0.1)] hover:shadow-[0_8px_40px_0_rgba(129,140,248,0.2)] hover:border-indigo-200 transition-all duration-300"
                   >
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-                      {/* Company Info */}
                       <div className="flex items-center gap-4 min-w-0">
                         <div className="w-14 h-14 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
                           <FiBriefcase size={24} />
@@ -199,15 +192,25 @@ const Page = () => {
                         </div>
                       </div>
 
-                      {/* Actions */}
                       <div className="flex items-center gap-3 shrink-0">
+                        {/* VIEW DETAILS BUTTON - YENİ ƏLAVƏ EDİLDİ */}
+                        <button
+                          onClick={() => router.push(`/userdashboard/internships/${item.internshipId}`)}
+                          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-indigo-50 text-indigo-500 border border-[#E8E4FF] hover:bg-indigo-100 transition-all active:scale-90 shadow-sm"
+                          title="View Details"
+                        >
+                          <FiEye size={20} />
+                        </button>
+
                         <button
                           onClick={() => setShowConfirm(item.internshipId)}
                           disabled={!!isProcessing}
-                          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-indigo-50 text-slate-400 border border-[#E8E4FF] hover:bg-rose-50 hover:text-rose-500 hover:border-rose-100 transition-all active:scale-90 disabled:opacity-30"
+                          className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-50 text-slate-400 border border-[#E8E4FF] hover:bg-rose-50 hover:text-rose-500 hover:border-rose-100 transition-all active:scale-90 disabled:opacity-30"
+                          title="Delete Bookmark"
                         >
                           {isDeleting ? <FiLoader className="animate-spin" /> : <FiTrash2 size={18} />}
                         </button>
+                        
                         <button
                           onClick={() => handleApply(item.internshipId)}
                           disabled={!!isProcessing}
@@ -225,15 +228,13 @@ const Page = () => {
                 );
               })
             ) : (
-              /* Empty State */
+              /* Empty State (Eyni qalır) */
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center py-20 px-6">
                 <div className="w-24 h-24 bg-indigo-50 text-indigo-500 rounded-[35%] flex items-center justify-center mb-6 animate-pulse">
                   <FiBookmark size={40} />
                 </div>
                 <h2 className="text-xl font-bold text-[#1E1B4B] mb-2">The list is empty</h2>
-                <p className="text-slate-400 max-w-[280px] leading-relaxed text-sm font-medium">
-                  Save vacancies you like and apply easily from here.
-                </p>
+                <p className="text-slate-400 max-w-[280px] leading-relaxed text-sm font-medium">Save vacancies you like and apply easily from here.</p>
               </motion.div>
             )}
           </AnimatePresence>

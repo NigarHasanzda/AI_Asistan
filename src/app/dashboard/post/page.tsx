@@ -4,11 +4,16 @@ import React, { useState, useEffect } from "react";
 import { createInternship } from "@/services/InternshipServices";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  PlusCircle, Calendar, MapPin, Briefcase, 
-  FileText, CheckCircle2, Loader2, DollarSign, 
+  Calendar, Briefcase, CheckCircle2, Loader2, DollarSign, 
   X, AlertCircle, Globe, Building2, Home,
-  ArrowRight, Sparkles
+  ArrowRight, Hash, Plus
 } from "lucide-react";
+
+// Frontend üçün müvəqqəti tip
+interface TemporarySkill {
+  tempId: number;
+  name: string;
+}
 
 export default function CreateInternshipPage() {
   const [loading, setLoading] = useState(false);
@@ -21,6 +26,10 @@ export default function CreateInternshipPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [deadlineDate, setDeadlineDate] = useState("");
+  
+  // Bacarıqlar üçün local state
+  const [skills, setSkills] = useState<TemporarySkill[]>([]);
+  const [skillInput, setSkillInput] = useState("");
 
   useEffect(() => {
     if (toast) {
@@ -29,8 +38,25 @@ export default function CreateInternshipPage() {
     }
   }, [toast]);
 
+  const addSkill = () => {
+    const trimmed = skillInput.trim();
+    if (trimmed && !skills.find(s => s.name.toLowerCase() === trimmed.toLowerCase())) {
+      // Burada tempId yalnız frontend-də silmə əməliyyatı üçün lazımdır
+      setSkills([...skills, { tempId: Date.now(), name: trimmed }]);
+      setSkillInput("");
+    }
+  };
+
+  const removeSkill = (tempId: number) => {
+    setSkills(skills.filter(s => s.tempId !== tempId));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (skills.length === 0) {
+      setToast({ msg: "Zəhmət olmasa ən azı bir bacarıq əlavə edin.", type: "error" });
+      return;
+    }
     setLoading(true);
 
     try {
@@ -43,21 +69,23 @@ export default function CreateInternshipPage() {
         endDate: new Date(endDate).toISOString(),
         deadlineDate: new Date(deadlineDate).toISOString(),
         departmentId: 1,
-        skillIds: [1] 
+        // Backend ID-ləri özü verəcəyi üçün biz yalnız adları göndəririk
+        skills: skills.map(s => s.name) 
       };
 
       await createInternship(payload);
-      setToast({ msg: "Opportunity published successfully! 🎉", type: "success" });
+      setToast({ msg: "Elan uğurla paylaşıldı! 🎉", type: "success" });
       
+      // Formu sıfırla
       setTitle("");
       setDescription("");
       setStartDate("");
       setEndDate("");
       setDeadlineDate("");
+      setSkills([]);
       
     } catch (error: any) {
-      const errorMsg = error.response?.data?.message || "Failed to create internship.";
-      setToast({ msg: errorMsg, type: "error" });
+      setToast({ msg: error.response?.data?.message || "Xəta baş verdi.", type: "error" });
     } finally {
       setLoading(false);
     }
@@ -69,7 +97,7 @@ export default function CreateInternshipPage() {
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-50 via-slate-50 to-white py-16 px-4">
       
-      {/* Toast Notification */}
+      {/* Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div
@@ -86,7 +114,7 @@ export default function CreateInternshipPage() {
               {toast.type === "success" ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-900">{toast.type === "success" ? "Excellent!" : "System Error"}</p>
+              <p className="text-sm font-bold text-slate-900">{toast.type === "success" ? "Əla!" : "Xəta"}</p>
               <p className="text-xs text-slate-500 font-medium">{toast.msg}</p>
             </div>
             <button onClick={() => setToast(null)} className="p-1 hover:bg-slate-100 rounded-lg transition-colors">
@@ -102,26 +130,23 @@ export default function CreateInternshipPage() {
           animate={{ y: 0, opacity: 1 }}
           className="bg-white/70 backdrop-blur-md rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.05)] border border-white p-8 md:p-14 relative overflow-hidden"
         >
-          {/* Decorative blur background */}
-          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-indigo-100/40 rounded-full blur-3xl pointer-events-none" />
-
           <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
             
-            {/* Section 1: Content */}
+            {/* Bölmə 1: Ümumi */}
             <div className="space-y-8">
               <div className="flex items-center gap-4">
                 <span className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-lg shadow-indigo-200">1</span>
-                <h3 className="text-xl font-bold text-slate-800">Basic Information</h3>
+                <h3 className="text-xl font-bold text-slate-800">Əsas Məlumatlar</h3>
               </div>
 
               <div className="grid gap-6">
                 <div>
-                  <label className={labelStyles}>Job Title</label>
+                  <label className={labelStyles}>Vakansiya Adı</label>
                   <div className="relative">
                     <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
                     <input 
                       type="text" 
-                      placeholder="e.g. Frontend Developer Intern" 
+                      placeholder="Məs: Frontend Developer" 
                       value={title} 
                       onChange={(e) => setTitle(e.target.value)} 
                       required 
@@ -131,31 +156,79 @@ export default function CreateInternshipPage() {
                 </div>
 
                 <div>
-                  <label className={labelStyles}>Detailed Description</label>
+                  <label className={labelStyles}>Təsvir</label>
                   <textarea 
-                    placeholder="What will the intern do? Mention tech stack and expectations..." 
+                    placeholder="Tələblər və öhdəliklər haqqında məlumat yazın..." 
                     value={description} 
                     onChange={(e) => setDescription(e.target.value)} 
                     required 
-                    rows={6}
+                    rows={4}
                     className={`${inputStyles} resize-none py-4`}
                   />
+                </div>
+
+                {/* SKILLS BÖLMƏSİ */}
+                <div>
+                  <label className={labelStyles}>Tələb Olunan Bacarıqlar</label>
+                  <div className="flex gap-2 mb-4">
+                    <div className="relative flex-1">
+                      <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                      <input 
+                        type="text" 
+                        placeholder="Bacarıq əlavə et (React, SQL)..." 
+                        value={skillInput}
+                        onChange={(e) => setSkillInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
+                        className={`${inputStyles} pl-11`}
+                      />
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={addSkill}
+                      className="bg-indigo-600 text-white px-6 rounded-xl font-bold hover:bg-indigo-700 transition-colors flex items-center gap-2"
+                    >
+                      <Plus size={18} /> Əlavə et
+                    </button>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 min-h-[40px]">
+                    <AnimatePresence>
+                      {skills.map((skill) => (
+                        <motion.div
+                          key={skill.tempId}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className="flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-full text-sm font-bold shadow-sm"
+                        >
+                          {skill.name}
+                          <button 
+                            type="button" 
+                            onClick={() => removeSkill(skill.tempId)}
+                            className="p-0.5 hover:bg-indigo-200 rounded-full transition-colors"
+                          >
+                            <X size={14} />
+                          </button>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Section 2: Logistics */}
+            {/* Bölmə 2: Məkan və Zaman */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div className="space-y-6">
-                 <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4">
                     <span className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-lg shadow-indigo-200">2</span>
-                    <h3 className="text-xl font-bold text-slate-800">Environment</h3>
+                    <h3 className="text-xl font-bold text-slate-800">İş Rejimi</h3>
                 </div>
                 
                 <div className="grid grid-cols-3 gap-3">
                     {[
-                        { id: 0, icon: Globe, label: "Remote" },
                         { id: 1, icon: Building2, label: "Onsite" },
+                        { id: 0, icon: Globe, label: "Remote" },
                         { id: 2, icon: Home, label: "Hybrid" }
                     ].map((type) => (
                         <button
@@ -179,7 +252,7 @@ export default function CreateInternshipPage() {
                         <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-indigo-600">
                             <DollarSign size={20} />
                         </div>
-                        <span className="text-sm font-bold text-slate-700">Paid Internship</span>
+                        <span className="text-sm font-bold text-slate-700">Ödənişli Təcrübə</span>
                     </div>
                     <label className="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" checked={isPaid} onChange={(e) => setIsPaid(e.target.checked)} className="sr-only peer"/>
@@ -191,22 +264,22 @@ export default function CreateInternshipPage() {
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
                     <span className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-lg shadow-indigo-200">3</span>
-                    <h3 className="text-xl font-bold text-slate-800">Timeline</h3>
+                    <h3 className="text-xl font-bold text-slate-800">Tarixlər</h3>
                 </div>
 
                 <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className={labelStyles}>Start Date</label>
+                            <label className={labelStyles}>Başlama</label>
                             <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required className={inputStyles} />
                         </div>
                         <div>
-                            <label className={labelStyles}>End Date</label>
+                            <label className={labelStyles}>Bitmə</label>
                             <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} required className={inputStyles} />
                         </div>
                     </div>
                     <div>
-                        <label className={labelStyles}>Application Deadline</label>
+                        <label className={labelStyles}>Son Müraciət</label>
                         <div className="relative">
                             <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400" size={16} />
                             <input type="date" value={deadlineDate} onChange={(e) => setDeadlineDate(e.target.value)} required className={`${inputStyles} pl-11 border-rose-100 text-rose-600 focus:border-rose-400 focus:ring-rose-500/10`} />
@@ -222,23 +295,13 @@ export default function CreateInternshipPage() {
                 disabled={loading}
                 className="group relative w-full h-16 bg-slate-900 hover:bg-indigo-600 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-2xl shadow-indigo-100 flex items-center justify-center gap-3 overflow-hidden"
               >
-                <AnimatePresence mode="wait">
-                  {loading ? (
-                    <motion.div key="loader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                      <Loader2 className="animate-spin" size={24} />
-                    </motion.div>
-                  ) : (
-                    <motion.div key="text" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
-                        Publish Placement 
-                        <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                
-                {/* Button Shine Effect */}
+                {loading ? <Loader2 className="animate-spin" size={24} /> : (
+                    <span className="flex items-center gap-3">
+                        Paylaş <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                    </span>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
               </button>
-              <p className="text-center mt-6 text-xs text-slate-400 font-medium">By publishing, you agree to our Terms of Talent Acquisition.</p>
             </div>
 
           </form>

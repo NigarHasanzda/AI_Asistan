@@ -56,7 +56,14 @@ const InternshipCard = ({
   const router = useRouter();
 
   const handleAddSkill = () => {
-    if (!newSkill.trim() || isClosed) return;
+    if (!newSkill.trim()) {
+        toast.error("Bacarıq adı boş ola bilməz");
+        return;
+    }
+    if (isClosed) {
+        toast.error("Bağlı elana bacarıq əlavə etmək olmaz");
+        return;
+    }
     onAddSkill(id, newSkill.trim());
     setNewSkill("");
   };
@@ -214,7 +221,6 @@ const Page = () => {
     });
   }, [postings, searchQuery, statusFilter, paymentFilter, locationFilter]);
 
-  // API Actions (Status, Update, Delete) ... (Mövcud handle funksiyaları eynidir)
   const handleStatusToggle = async (id: number, currentStatus: string) => {
     const isClosed = currentStatus === "Closed" || currentStatus === "Inactive";
     const promise = isClosed ? reopenInternship(id) : closeInternship(id);
@@ -240,6 +246,26 @@ const Page = () => {
     try { await promise; setSelectedInternship(null); fetchData(); } catch (e) {}
   };
 
+  const handleAddSkillAction = async (id: number, skill: string) => {
+    const promise = addSkillToInternship(id, skill);
+    toast.promise(promise, {
+      loading: 'Bacarıq əlavə edilir...',
+      success: `'${skill}' uğurla əlavə edildi!`,
+      error: 'Bacarıq əlavə olunarkən xəta baş verdi'
+    });
+    try { await promise; fetchData(); } catch (e) {}
+  }
+
+  const handleViewAction = async (id: number) => {
+    try {
+        const data = await getInternshipById(id);
+        setSelectedInternship({ ...data, id, skills: data.skills || [] });
+        toast.success("Redaktə paneli açıldı", { duration: 1000, icon: '📝' });
+    } catch (e) {
+        toast.error("Məlumat gətirilərkən xəta baş verdi");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#FAFBFF] p-6 md:p-12 font-sans text-slate-900">
       <Toaster position="top-right" />
@@ -250,7 +276,7 @@ const Page = () => {
             <h1 className="text-[40px] font-black text-slate-900 tracking-tight leading-none">Internships</h1>
             <p className="text-slate-500 mt-3 text-lg font-medium">Manage and monitor your internship listings.</p>
           </div>
-          <Link href="/dashboard/post" className="flex items-center gap-2 bg-indigo-600 text-white px-7 py-4 rounded-[22px] font-bold hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 w-fit">
+          <Link href="/dashboard/post" onClick={() => toast.loading("Yeni elan səhifəsinə keçilir...", { duration: 1000 })} className="flex items-center gap-2 bg-indigo-600 text-white px-7 py-4 rounded-[22px] font-bold hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 w-fit">
             <Plus size={20} strokeWidth={3} /> Create New
           </Link>
         </header>
@@ -271,14 +297,17 @@ const Page = () => {
           <div className="flex flex-wrap items-center gap-2 p-2 w-full lg:w-auto">
             {/* Custom Select Wrapper */}
             {[
-              { val: statusFilter, set: setStatusFilter, opt: [{l:'All Status',v:'all'}, {l:'Active',v:'active'}, {l:'Closed',v:'closed'}] },
-              { val: paymentFilter, set: setPaymentFilter, opt: [{l:'All Payment',v:'all'}, {l:'Paid',v:'paid'}, {l:'Unpaid',v:'unpaid'}] },
-              { val: locationFilter, set: setLocationFilter, opt: [{l:'All Location',v:'all'}, {l:'On-site',v:'0'}, {l:'Remote',v:'1'}, {l:'Hybrid',v:'2'}] }
+              { label: 'Status', val: statusFilter, set: setStatusFilter, opt: [{l:'All Status',v:'all'}, {l:'Active',v:'active'}, {l:'Closed',v:'closed'}] },
+              { label: 'Ödəniş', val: paymentFilter, set: setPaymentFilter, opt: [{l:'All Payment',v:'all'}, {l:'Paid',v:'paid'}, {l:'Unpaid',v:'unpaid'}] },
+              { label: 'Məkan', val: locationFilter, set: setLocationFilter, opt: [{l:'All Location',v:'all'}, {l:'On-site',v:'0'}, {l:'Remote',v:'1'}, {l:'Hybrid',v:'2'}] }
             ].map((f, i) => (
               <div key={i} className="relative group flex-1 lg:flex-none min-w-[140px]">
                 <select 
                   value={f.val} 
-                  onChange={(e) => f.set(e.target.value)}
+                  onChange={(e) => {
+                    f.set(e.target.value);
+                    toast.success(`${f.label} filtri yeniləndi`, { duration: 800 });
+                  }}
                   className="w-full appearance-none bg-slate-50 border border-slate-100 py-3.5 px-5 pr-10 rounded-2xl text-sm font-bold text-slate-600 outline-none cursor-pointer hover:bg-slate-100 hover:border-slate-200 transition-all focus:ring-2 focus:ring-indigo-100"
                 >
                   {f.opt.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
@@ -311,12 +340,12 @@ const Page = () => {
               filteredPostings.map(item => (
                 <InternshipCard 
                   key={item.id} {...item} 
-                  onDeleteRequest={(id) => setDeleteTargetId(id)} 
-                  onAddSkill={async (id, s) => { await addSkillToInternship(id, s); fetchData(); }} 
-                  onView={async (id) => {
-                    const data = await getInternshipById(id);
-                    setSelectedInternship({ ...data, id, skills: data.skills || [] });
-                  }}
+                  onDeleteRequest={(id) => {
+                    setDeleteTargetId(id);
+                    toast("Silmək üçün təsdiq gözlənilir", { icon: '⚠️' });
+                  }} 
+                  onAddSkill={handleAddSkillAction} 
+                  onView={handleViewAction}
                   onToggleStatus={handleStatusToggle}
                 />
               ))
@@ -334,7 +363,7 @@ const Page = () => {
         )}
       </div>
 
-      {/* Delete Confirmation Modal & Settings Modal ... (Mövcud modallar saxlanılıb) */}
+      {/* Delete Confirmation Modal */}
       {deleteTargetId && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[70] p-4">
           <div className="bg-white rounded-[35px] p-10 w-full max-w-md shadow-2xl scale-in-center">
@@ -344,8 +373,17 @@ const Page = () => {
             <h2 className="text-2xl font-black text-slate-900 mb-3 text-center">Delete Listing?</h2>
             <p className="text-slate-500 mb-10 text-center leading-relaxed font-medium">This action is permanent. All associated applicant data will be removed from the system.</p>
             <div className="flex gap-4">
-              <button onClick={() => setDeleteTargetId(null)} className="flex-1 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all">Cancel</button>
-              <button onClick={async () => { await deleteInternship(deleteTargetId); fetchData(); setDeleteTargetId(null); toast.success("Successfully deleted"); }} className="flex-1 py-4 bg-red-500 text-white font-bold rounded-2xl hover:bg-red-600 transition-all shadow-lg shadow-red-100">Confirm Delete</button>
+              <button onClick={() => {
+                setDeleteTargetId(null);
+                toast.dismiss();
+              }} className="flex-1 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all">Cancel</button>
+              <button onClick={async () => { 
+                const promise = deleteInternship(deleteTargetId);
+                toast.promise(promise, { loading: 'Silinir...', success: 'Uğurla silindi!', error: 'Silinmə zamanı xəta' });
+                await promise; 
+                fetchData(); 
+                setDeleteTargetId(null); 
+              }} className="flex-1 py-4 bg-red-500 text-white font-bold rounded-2xl hover:bg-red-600 transition-all shadow-lg shadow-red-100">Confirm Delete</button>
             </div>
           </div>
         </div>
@@ -354,8 +392,10 @@ const Page = () => {
       {selectedInternship && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white rounded-[45px] p-12 w-full max-w-2xl shadow-2xl relative my-auto">
-             {/* Modal Header/Content ... */}
-             <button onClick={() => setSelectedInternship(null)} className="absolute top-10 right-10 p-3 bg-slate-50 text-slate-400 hover:text-slate-900 rounded-2xl transition-all"><X size={24} /></button>
+             <button onClick={() => {
+                setSelectedInternship(null);
+                toast.success("Dəyişikliklər ləğv edildi", { icon: '🚫' });
+             }} className="absolute top-10 right-10 p-3 bg-slate-50 text-slate-400 hover:text-slate-900 rounded-2xl transition-all"><X size={24} /></button>
              <h2 className="text-3xl font-black text-slate-900 mb-10 tracking-tight">Edit Posting</h2>
              
              <div className="space-y-6">
@@ -370,10 +410,16 @@ const Page = () => {
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="text-[11px] font-black text-slate-400 uppercase tracking-[2px] ml-1">Application Deadline</label>
-                    <input type="date" value={selectedInternship.deadlineDate?.split('T')[0]} onChange={(e) => setSelectedInternship({...selectedInternship, deadlineDate: e.target.value})} className="w-full bg-slate-50 border-2 border-transparent rounded-[20px] px-6 py-4 outline-none font-bold text-slate-600" />
+                    <input type="date" value={selectedInternship.deadlineDate?.split('T')[0]} onChange={(e) => {
+                        setSelectedInternship({...selectedInternship, deadlineDate: e.target.value});
+                        toast("Tarix dəyişdirildi", { duration: 1000, icon: '📅' });
+                    }} className="w-full bg-slate-50 border-2 border-transparent rounded-[20px] px-6 py-4 outline-none font-bold text-slate-600" />
                   </div>
                   <div className="flex items-center gap-4 p-5 bg-indigo-50/30 rounded-[20px] border-2 border-indigo-50/50 mt-4">
-                    <input type="checkbox" checked={selectedInternship.isPaid} onChange={(e) => setSelectedInternship({...selectedInternship, isPaid: e.target.checked})} className="w-6 h-6 accent-indigo-600 rounded-lg" />
+                    <input type="checkbox" checked={selectedInternship.isPaid} onChange={(e) => {
+                        setSelectedInternship({...selectedInternship, isPaid: e.target.checked});
+                        toast.success(e.target.checked ? "Ödənişli təcrübə" : "Ödənişsiz təcrübə");
+                    }} className="w-6 h-6 accent-indigo-600 rounded-lg" />
                     <label className="text-sm font-black text-indigo-900">Paid Internship</label>
                   </div>
                 </div>
