@@ -9,12 +9,15 @@ import {
   MessageSquareQuote, 
   Briefcase, 
   ClipboardCheck, 
-  Bookmark, 
+  BookmarkCheck,
   Trophy, 
   UserCircle,
   Menu,
   X,
-  Sparkles
+  Sparkles,
+  History,
+  CreditCard,
+  GraduationCap
 } from "lucide-react";
 
 const menuItems = [
@@ -25,7 +28,7 @@ const menuItems = [
   },
   { 
     name: "All Interviews", 
-    icon: <MessageSquareQuote size={22} />, 
+    icon: <History size={22} />, 
     path: "/userdashboard/myinterviews" 
   },
   { 
@@ -35,7 +38,7 @@ const menuItems = [
   },
   { 
     name: "Internship", 
-    icon: <Briefcase size={22} />, 
+    icon: <GraduationCap size={22} />, 
     path: "/userdashboard/internships" 
   },
   { 
@@ -45,7 +48,7 @@ const menuItems = [
   },
   { 
     name: "Saved Internship", 
-    icon: <Bookmark size={22} />, 
+    icon: <BookmarkCheck size={22} />, 
     path: "/userdashboard/savedinternship" 
   },
   { 
@@ -53,10 +56,15 @@ const menuItems = [
     icon: <Trophy size={22} />, 
     path: "/userdashboard/leaderboard" 
   },
-    { 
+  { 
     name: "Payment", 
-    icon: <Trophy size={22} />, 
+    icon: <CreditCard size={22} />, 
     path: "/userdashboard/payment" 
+  },
+  { 
+    name: "Review", 
+    icon: <MessageSquareQuote size={22} />, // Ikon burada düzəldildi
+    path: "/userdashboard/review" 
   },
   { 
     name: "Profile", 

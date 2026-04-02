@@ -321,6 +321,9 @@ export default function StudentProfilePage() {
                 </div>
               </div>
             </motion.div>
+            <motion.div>
+              
+            </motion.div>
           </aside>
 
           {/* MAIN CONTENT: TABS */}
