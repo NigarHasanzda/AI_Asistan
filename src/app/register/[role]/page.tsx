@@ -3,20 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { 
-  ArrowRight, 
-  Mail, 
-  Lock, 
-  User, 
-  ShieldCheck, 
-  Loader2, 
-  CheckCircle2,
-  AlertCircle,
-  Eye,
-  EyeOff
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import { ArrowRight, Mail, Lock, User, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { RegisterRequest } from "@/types/register";
 import { UserRegister } from "@/services/Auth";
 
@@ -34,7 +21,8 @@ const Page = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     const roleValue = urlRole === "employer" ? 2 : 1;
@@ -52,172 +40,153 @@ const Page = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
     if (!validatePassword(formData.password)) {
-      toast.error("Password must be at least 8 characters with upper, lower, number, and special character.");
+      setError("Şifrə ən azı 8 simvol, böyük/kiçik hərf, rəqəm və xüsusi simvol içerməlidir");
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
-    const t = toast.loading("Creating your account...");
-
     try {
       const result = await UserRegister(formData);
-
       localStorage.setItem("token", result.token);
       localStorage.setItem("roleId", formData.role.toString());
       localStorage.setItem("role", formData.role === 2 ? "employer" : "student");
 
-      toast.success("Welcome aboard! Registration successful.", { id: t });
+      setSuccess("Qeydiyyat uğurlu oldu! Yönləndirilirsiniz...");
 
       setTimeout(() => {
-        const path = formData.role === 1 
-          ? "/register/student/studentprofile" 
-          : "/register/employer/employerprofile";
-        router.push(path);
+        if (formData.role === 1) {
+          router.push("/register/student/studentprofile");
+        } else if (formData.role === 2) {
+          router.push("/register/employer/employerprofile");
+        } else {
+          router.push("/");
+        }
       }, 1500);
-
     } catch (err: any) {
-      const message = err.response?.data?.message || err.message || "Registration failed";
-      const finalMsg = (message.toLowerCase().includes("exist") || message.toLowerCase().includes("already"))
-        ? "This email is already registered."
-        : message;
-      
-      toast.error(finalMsg, { id: t });
+      const message = err.response?.data?.message || err.message || "Qeydiyyat zamanı xəta baş verdi";
+      setError(message.toLowerCase().includes("exist") ? "Bu istifadəçi artıq mövcuddur" : message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 relative overflow-hidden">
-      <Toaster position="top-right" />
-      
-      {/* Background Ornaments */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-blue-50 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-[10%] -left-[5%] w-[40%] h-[40%] bg-indigo-50 rounded-full blur-[120px]" />
-      </div>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-[480px] bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 md:p-10">
+        
+        {/* HEADER */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-50 rounded-2xl mb-4">
+            <User className="w-8 h-8 text-indigo-600" />
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
+            Create {formData.role === 2 ? "Employer" : "Student"} Account
+          </h1>
+          <p className="text-slate-500 mt-2">Join our platform to start your journey.</p>
+        </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-[520px] relative z-10"
-      >
-        <div className="bg-white rounded-[40px] shadow-[0_20px_70px_-10px_rgba(0,0,0,0.05)] border border-slate-100 p-8 md:p-12">
-          
-          {/* LOGO / ICON */}
-          <div className="flex justify-center mb-8">
-            <div className="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center shadow-xl shadow-blue-200 rotate-3">
-              <ShieldCheck size={32} className="text-white -rotate-3" />
+        {/* STATUS MESSAGES */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3 text-red-600 text-sm animate-in fade-in zoom-in duration-300">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+        {success && (
+          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-start gap-3 text-emerald-600 text-sm animate-in fade-in zoom-in duration-300">
+            <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+            <span>{success}</span>
+          </div>
+        )}
+
+        {/* FORM */}
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {/* USERNAME */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700 ml-1">Username</label>
+            <div className="relative">
+              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                name="userName"
+                type="text"
+                placeholder="johndoe"
+                value={formData.userName}
+                onChange={handleChange}
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all text-slate-900"
+                required
+              />
             </div>
           </div>
 
-          {/* HEADER */}
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
-              Join as <span className="text-blue-600 italic">{formData.role === 2 ? "Employer" : "Student"}</span>
-            </h1>
-            <p className="text-slate-500 font-medium">Create your account to unlock all features.</p>
+          {/* EMAIL */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700 ml-1">Email Address</label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                name="email"
+                type="email"
+                placeholder="name@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all text-slate-900"
+                required
+              />
+            </div>
           </div>
 
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            {/* FULL NAME */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
-              <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
-                <input
-                  name="userName"
-                  type="text"
-                  required
-                  placeholder="John Doe"
-                  value={formData.userName}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all font-medium"
-                />
-              </div>
+          {/* PASSWORD */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700 ml-1">Password</label>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 transition-all text-slate-900"
+                required
+              />
             </div>
-
-            {/* EMAIL */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
-              <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="name@company.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all font-medium"
-                />
-              </div>
-            </div>
-
-            {/* PASSWORD */}
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-slate-700 ml-1">Secure Password</label>
-              <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors" size={20} />
-                <input
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full pl-12 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-600 transition-all font-medium"
-                />
-                <button 
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-              <div className="flex items-center gap-2 mt-2 ml-1 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                <AlertCircle size={12} />
-                <span>8+ chars, Case sensitive, Symbol & Number</span>
-              </div>
-            </div>
-
-            {/* SUBMIT BUTTON */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-xl shadow-blue-100 transition-all active:scale-95 disabled:opacity-50 group"
-            >
-              {loading ? (
-                <Loader2 className="animate-spin" size={24} />
-              ) : (
-                <>
-                  <span>Create Account</span>
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* FOOTER */}
-          <div className="mt-10 pt-8 border-t border-slate-50 text-center">
-            <p className="text-slate-500 font-medium">
-              Already have an account?{" "}
-              <Link href="/auth/login" className="text-blue-600 font-black hover:underline underline-offset-4 ml-1">
-                Login here
-              </Link>
+            <p className="text-[11px] text-slate-400 px-1 leading-relaxed">
+              Use 8+ characters with a mix of letters, numbers & symbols.
             </p>
           </div>
-        </div>
 
-        {/* TRUST BADGE */}
-        <div className="mt-8 flex justify-center items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-widest">
-          <ShieldCheck size={14} className="text-emerald-500" />
-          Secure Enterprise-grade Registration
+          {/* SUBMIT BUTTON */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-3.5 rounded-xl flex justify-center items-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-indigo-200 mt-2"
+          >
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                Create Account
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* LOGIN LINK */}
+        <div className="text-center mt-8 pt-6 border-t border-slate-100">
+          <p className="text-slate-500 text-sm">
+            Already have an account?{" "}
+            <Link href="/auth/login" className="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors">
+              Sign in
+            </Link>
+          </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
