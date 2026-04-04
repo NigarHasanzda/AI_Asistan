@@ -10,18 +10,18 @@ export default function SendReview() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [listLoading, setListLoading] = useState(true);
   
-  // ── BİLDİRİŞ (TOAST) STATE ──
+  // ── NOTIFICATION (TOAST) STATE ──
   const [alert, setAlert] = useState<{ show: boolean; msg: string; type: 'success' | 'error' }>({
     show: false,
     msg: "",
     type: 'success'
   });
 
-  // ── SİLMƏ MODALI STATE ──
+  // ── DELETE MODAL STATE ──
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [idToDelete, setIdToDelete] = useState<number | null>(null);
 
-  // Bildiriş göstərmək üçün köməkçi funksiya
+  // Helper function to trigger alerts
   const triggerAlert = (msg: string, type: 'success' | 'error' = 'success') => {
     setAlert({ show: true, msg, type });
     setTimeout(() => setAlert({ show: false, msg: "", type: 'success' }), 3000);
@@ -33,7 +33,7 @@ export default function SendReview() {
       const data = await getMyReviews();
       setReviews(data);
     } catch {
-      triggerAlert("Rəylər yüklənərkən xəta baş verdi", "error");
+      triggerAlert("Failed to load reviews", "error");
     } finally {
       setListLoading(false);
     }
@@ -46,11 +46,11 @@ export default function SendReview() {
     setLoading(true);
     try {
       await createReview(message);
-      triggerAlert("Rəyiniz uğurla göndərildi! ✅");
+      triggerAlert("Your review has been submitted! ✅");
       setMessage("");
       fetchReviews();
     } catch {
-      triggerAlert("Rəy göndərilə bilmədi ❌", "error");
+      triggerAlert("Could not send review ❌", "error");
     } finally {
       setLoading(false);
     }
@@ -66,9 +66,9 @@ export default function SendReview() {
     try {
       await deleteReview(idToDelete);
       setReviews(p => p.filter(r => r.id !== idToDelete));
-      triggerAlert("Rəy silindi");
+      triggerAlert("Review deleted successfully");
     } catch {
-      triggerAlert("Silinmə zamanı xəta", "error");
+      triggerAlert("An error occurred while deleting", "error");
     } finally {
       setDeleteModalOpen(false);
       setIdToDelete(null);
@@ -96,31 +96,31 @@ export default function SendReview() {
       {/* ── HEADER ── */}
       <header className="max-w-[90%] mx-auto pt-10 px-6 flex justify-between items-end mb-8">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-[#0A192F]">Rəy Paneli</h1>
-          <p className="text-slate-500 font-medium">Fikirləriniz bizim üçün dəyərlidir.</p>
+          <h1 className="text-3xl font-black tracking-tight text-[#0A192F]">Feedback Panel</h1>
+          <p className="text-slate-500 font-medium">Your thoughts are valuable to us.</p>
         </div>
         <div className="bg-white px-4 py-2 rounded-2xl shadow-sm border border-white/60 flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">{reviews.length} Rəy</span>
+          <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">{reviews.length} Reviews</span>
         </div>
       </header>
 
       <main className="max-w-[90%] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* ── YENİ RƏY YAZ ── */}
+        {/* ── WRITE NEW REVIEW ── */}
         <div className="lg:col-span-4 lg:sticky lg:top-10">
           <div className="bg-white/80 backdrop-blur-xl border border-white rounded-[32px] p-8 shadow-xl shadow-blue-900/5">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-[#0A192F] rounded-2xl flex items-center justify-center shadow-lg">
                 <Sparkles size={20} className="text-white" />
               </div>
-              <h2 className="font-bold text-lg">Yeni Rəy Yaz</h2>
+              <h2 className="font-bold text-lg">Post Feedback</h2>
             </div>
 
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Nə düşünürsünüz?"
+              placeholder="What's on your mind?"
               className="w-full bg-slate-50 border-none rounded-2xl p-5 text-sm min-h-[160px] focus:ring-2 focus:ring-blue-500/20 transition-all outline-none mb-4 resize-none"
             />
 
@@ -132,13 +132,13 @@ export default function SendReview() {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <><Send size={18} /> Göndər</>
+                <><Send size={18} /> Submit</>
               )}
             </button>
           </div>
         </div>
 
-        {/* ── RƏYLƏR SİYAHISI ── */}
+        {/* ── REVIEWS LIST ── */}
         <div className="lg:col-span-8">
           {listLoading ? (
             <div className="space-y-6">
@@ -147,7 +147,7 @@ export default function SendReview() {
           ) : reviews.length === 0 ? (
             <div className="bg-white/40 border-2 border-dashed border-white rounded-[40px] p-20 text-center">
               <MessageSquare className="mx-auto text-slate-300 mb-4" size={40} />
-              <p className="text-slate-400 font-medium italic">Hələ heç bir rəy tapılmadı.</p>
+              <p className="text-slate-400 font-medium italic">No reviews found yet.</p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -177,7 +177,7 @@ export default function SendReview() {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-[13px] font-bold text-[#0A192F]">Admin Cavabı</span>
+                            <span className="text-[13px] font-bold text-[#0A192F]">Admin Response</span>
                           </div>
                           <p className="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-2xl rounded-tl-none border border-slate-100">
                             {review.adminResponse}
@@ -187,7 +187,7 @@ export default function SendReview() {
                     ) : (
                       <div className="flex items-center gap-2 text-blue-500/60 bg-blue-50/50 w-fit px-4 py-1.5 rounded-full border border-blue-100/50">
                         <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest italic">Gözləmədə...</span>
+                        <span className="text-[11px] font-bold uppercase tracking-widest italic">Pending...</span>
                       </div>
                     )}
                   </div>
@@ -198,7 +198,7 @@ export default function SendReview() {
         </div>
       </main>
 
-      {/* ── SİLMƏ TƏSDİQ MODALI ── */}
+      {/* ── DELETE CONFIRMATION MODAL ── */}
       {deleteModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white w-full max-w-sm rounded-[32px] p-8 shadow-2xl animate-in zoom-in-95 duration-200">
@@ -206,21 +206,21 @@ export default function SendReview() {
               <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-4">
                 <AlertCircle size={32} />
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Rəyi silmək?</h3>
-              <p className="text-slate-500 text-sm mb-8">Bu əməliyyat geri qaytarıla bilməz.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Delete Review?</h3>
+              <p className="text-slate-500 text-sm mb-8">This action cannot be undone.</p>
               
               <div className="flex w-full gap-3">
                 <button 
                   onClick={() => setDeleteModalOpen(false)}
                   className="flex-1 py-3.5 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all"
                 >
-                  Xeyr
+                  Cancel
                 </button>
                 <button 
                   onClick={handleDelete}
                   className="flex-1 py-3.5 bg-red-500 text-white font-bold rounded-2xl hover:bg-red-600 shadow-lg shadow-red-500/20 transition-all"
                 >
-                  Bəli, sil
+                  Yes, Delete
                 </button>
               </div>
             </div>

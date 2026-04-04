@@ -38,7 +38,7 @@ const LeaderboardSection = ({ targetJobId }: { targetJobId?: number }) => {
   if (data.length === 0) return null;
 
   return (
-    <section className="relative w-full max-w-8xl mx-auto py-24 px-6 overflow-hidden">
+    <section id="features" className="relative w-full max-w-8xl mx-auto py-24 px-6 overflow-hidden">
       {/* Arxa plan dekorasiyası */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-indigo-500/5 blur-[120px] rounded-full -z-10" />
       

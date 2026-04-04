@@ -12,7 +12,7 @@ import {
   LogoutOutlined,
 } from "@mui/icons-material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
-import { Menu, X } from "lucide-react"; // Mobil menyu üçün
+import { Menu, MessageSquareQuote, X } from "lucide-react"; // Mobil menyu üçün
 import { motion, AnimatePresence } from "framer-motion";
 
 const menuItems = [
@@ -24,6 +24,11 @@ const menuItems = [
   { name: " Application", icon: <ListAltOutlined />, path: "/admindashboard/application" },
 
   { name: "Internship  ", icon: <AccountCircleOutlined />, path: "/admindashboard/internship" },
+      { 
+    name: "Review", 
+    icon: <MessageSquareQuote size={22} />, // Ikon burada düzəldildi
+    path: "/admindashboard/review" 
+  },
 
   { name: "Profile  ", icon: <AccountCircleOutlined />, path: "/admindashboard/profile" },
 ];

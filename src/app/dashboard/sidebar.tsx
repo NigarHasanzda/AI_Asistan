@@ -24,7 +24,7 @@ const menuItems = [
     { 
     name: "Review", 
     icon: <MessageSquareQuote size={22} />, // Ikon burada düzəldildi
-    path: "/userdashboard/review" 
+    path: "/dashboard/review" 
   },
   { name: "Company Profile", icon: <AccountCircleOutlined />, path: "/dashboard/profile" },
 ];
