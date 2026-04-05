@@ -70,7 +70,7 @@ const InternshipsListPage = () => {
   return (
     <div className="min-h-screen p-4 md:p-10 bg-[#F8FAFC]">
       {/* Header Section */}
-      <div className="max-w-[90%] mx-auto mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="max-w-[95%] mx-auto mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Internship Management</h1>
           <p className="text-slate-500 font-medium mt-1">Review, track, and manage all active internship opportunities.</p>
@@ -84,7 +84,7 @@ const InternshipsListPage = () => {
       </div>
 
       {/* Main Content Card */}
-      <div className="max-w-[90%] mx-auto bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
+      <div className="max-w-[95%] mx-auto bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-40">
             <div className="relative">

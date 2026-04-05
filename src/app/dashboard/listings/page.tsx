@@ -1,10 +1,16 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { Users, Pencil, Plus, X, Lock, Unlock, CheckCircle2, BarChart3, Search, Trash2, AlertCircle, RotateCcw, ChevronDown } from "lucide-react";
+import { 
+  Users, Pencil, Plus, X, Lock, Unlock, CheckCircle2, 
+  BarChart3, Search, Trash2, RotateCcw, ChevronDown,
+  LayoutGrid, ListFilter, Calendar, MapPin, DollarSign,
+  ArrowUpRight, Sparkles, MoreHorizontal
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   getCompanyInternships,
@@ -33,146 +39,113 @@ interface Internship {
   status?: string;
 }
 
-interface InternshipCardProps extends Internship {
-  onAddSkill: (id: number, skill: string) => void;
-  onDeleteRequest: (id: number) => void;
-  onView: (id: number) => void;
-  onToggleStatus: (id: number, currentStatus: string) => void;
-}
-
-// --- Card Component ---
 const InternshipCard = ({
-  id,
-  title,
-  applicationCount,
-  status,
-  onAddSkill,
-  onDeleteRequest,
-  onView,
-  onToggleStatus
-}: InternshipCardProps) => {
+  id, title, applicationCount = 0, status, onAddSkill, onDeleteRequest, onView, onToggleStatus 
+}: any) => {
   const [newSkill, setNewSkill] = useState("");
   const isClosed = status === "Closed" || status === "Inactive";
   const router = useRouter();
 
   const handleAddSkill = () => {
-    if (!newSkill.trim()) {
-        toast.error("Bacarıq adı boş ola bilməz");
-        return;
-    }
-    if (isClosed) {
-        toast.error("Bağlı elana bacarıq əlavə etmək olmaz");
-        return;
-    }
+    if (!newSkill.trim() || isClosed) return;
     onAddSkill(id, newSkill.trim());
     setNewSkill("");
   };
 
   return (
-    <div className={`group relative flex flex-col h-full border-2 transition-all duration-500 rounded-[28px] p-6 ${
-      isClosed 
-        ? "bg-slate-50/50 border-dashed border-slate-200 opacity-75" 
-        : "bg-white border-transparent shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1"
-    }`}>
-      
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          {isClosed ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-200 text-slate-600 text-[11px] font-bold uppercase tracking-wider">
-              <Lock size={13} strokeWidth={2.5} /> Closed
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 text-[11px] font-bold uppercase tracking-wider animate-pulse-subtle">
-              <CheckCircle2 size={13} strokeWidth={2.5} /> Active
-            </span>
-          )}
+    <motion.div 
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`group relative flex flex-col  rounded-[32px] p-1 border transition-all duration-500 shadow-sm hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.08)] ${
+        isClosed ? "grayscale-[0.5] opacity-80 border-slate-100" : "border-transparent hover:border-indigo-100"
+      }`}
+    >
+      <div className="p-6 pb-4">
+        <div className="flex items-start justify-between mb-6">
+          <div className={`px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest flex items-center gap-2 ${
+            isClosed ? "bg-slate-100 text-slate-500" : "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100"
+          }`}>
+            <div className={`w-1.5 h-1.5 rounded-full ${isClosed ? "bg-slate-400" : "bg-emerald-500 animate-pulse"}`} />
+            {isClosed ? "Archived" : "Live Now"}
+          </div>
+          
+          <div className="flex gap-1">
+            <button onClick={() => onToggleStatus(id, status)} className="p-2.5 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-slate-900 transition-all">
+              {isClosed ? <Unlock size={18} /> : <Lock size={18} />}
+            </button>
+            <button onClick={() => onDeleteRequest(id)} className="p-2.5 rounded-2xl hover:bg-rose-50 text-slate-400 hover:text-rose-500 transition-all">
+              <Trash2 size={18} />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <Link 
-            href={`/dashboard/analytics/${id}`}
-            className="p-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all"
-            title="Analytics"
-          >
-            <BarChart3 size={18} />
-          </Link>
-          <button
-            onClick={() => onToggleStatus(id, status || "Active")}
-            className={`p-2 rounded-xl transition-all ${
-              isClosed ? "bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-800 hover:text-white"
-            }`}
-          >
-            {isClosed ? <Unlock size={18} /> : <Lock size={18} />}
-          </button>
-          <button
-            onClick={() => onDeleteRequest(id)}
-            className="p-2 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all"
-          >
-            <X size={18} />
-          </button>
+        <div className="space-y-2 mb-8">
+          <h3 className={`text-xl font-bold tracking-tight leading-snug ${isClosed ? "text-slate-500" : "text-slate-900"}`}>
+            {title}
+          </h3>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5 text-slate-400 font-bold text-xs uppercase tracking-wider">
+              <Users size={14} className="text-indigo-500" />
+              {applicationCount} Applicants
+            </div>
+            <div className="h-1 w-1 bg-slate-300 rounded-full" />
+            <div className="text-indigo-600 font-bold text-xs uppercase tracking-wider cursor-pointer hover:underline flex items-center gap-1" onClick={() => router.push(`/dashboard/analytics/${id}`)}>
+              Insights <ArrowUpRight size={14} />
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="flex-1">
-        <h3 className={`text-xl font-extrabold mb-2 leading-tight tracking-tight transition-colors ${
-          isClosed ? "text-slate-400" : "text-slate-900"
-        }`}>
-          {title}
-        </h3>
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-indigo-50/50 border border-indigo-100 text-indigo-700 mb-6">
-          <Users size={16} strokeWidth={2.5} />
-          <span className="text-sm font-bold">{applicationCount} Applicants</span>
-        </div>
-      </div>
-
-      {!isClosed && (
-        <div className="relative flex items-center mb-6 group/input">
-          <input
-            type="text"
-            value={newSkill}
-            onChange={(e) => setNewSkill(e.target.value)}
-            placeholder="Quick add skill..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-4 pr-12 py-3 text-sm focus:bg-white focus:ring-4 focus:ring-indigo-50 focus:border-indigo-400 outline-none transition-all placeholder:text-slate-400"
+        {/* Applicant Progress Mini Bar */}
+        <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden mb-6">
+          <motion.div 
+            initial={{ width: 0 }}
+            animate={{ width: `${Math.min((applicationCount / 20) * 100, 100)}%` }}
+            className={`h-full rounded-full ${isClosed ? "bg-slate-300" : "bg-indigo-600"}`}
           />
-          <button 
-            onClick={handleAddSkill} 
-            className="absolute right-2 p-1.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors"
+        </div>
+      </div>
+
+      <div className="mt-auto px-4 pb-4">
+        {!isClosed && (
+          <div className="relative mb-3">
+            <input
+              type="text"
+              value={newSkill}
+              onChange={(e) => setNewSkill(e.target.value)}
+              placeholder="Tag new skill..."
+              className="w-full bg-slate-50/50 border border-slate-100 rounded-[20px] pl-4 pr-12 py-3 text-xs font-semibold focus:bg-white focus:ring-4 focus:ring-indigo-50/50 transition-all outline-none"
+            />
+            <button onClick={handleAddSkill} className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-indigo-600 text-white rounded-xl hover:scale-105 transition-transform">
+              <Plus size={16} strokeWidth={3} />
+            </button>
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => router.push(`/dashboard/listings/${id}`)}
+            className="flex-1 py-4 bg-slate-900 text-white rounded-[22px] text-xs font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-lg shadow-slate-100"
           >
-            <Plus size={18} />
+            Manage Candidates
+          </button>
+          <button 
+            onClick={() => onView(id)} 
+            className="p-4 bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 rounded-[22px] transition-all"
+          >
+            <Pencil size={20} />
           </button>
         </div>
-      )}
-
-      <div className="flex items-center gap-3 mt-auto">
-        <button
-          onClick={() => router.push(`/dashboard/listings/${id}`)}
-          className={`flex-[3] py-3.5 rounded-2xl text-[14px] font-bold tracking-wide transition-all ${
-            isClosed 
-            ? "bg-slate-200 text-slate-500 hover:bg-slate-300" 
-            : "bg-slate-900 text-white hover:bg-indigo-600 shadow-lg shadow-indigo-100 hover:shadow-indigo-200"
-          }`}
-        >
-          View Details
-        </button>
-        <button 
-          onClick={() => onView(id)} 
-          className="flex-1 flex justify-center py-3.5 bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 hover:bg-indigo-50 rounded-2xl transition-all"
-        >
-          <Pencil size={20} />
-        </button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-// --- Main Page ---
 const Page = () => {
   const [postings, setPostings] = useState<Internship[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedInternship, setSelectedInternship] = useState<Internship | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
-  
-  // Filter states
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [paymentFilter, setPaymentFilter] = useState("all");
@@ -186,36 +159,16 @@ const Page = () => {
     setLoading(true);
     try {
       const data = await getCompanyInternships();
-      const formatted = data.map((item: any) => ({
-        ...item,
-        skills: item.skills || [],
-        applicants: item.applicantsCount || 0,
-        status: item.status || "Active"
-      })).sort((a: any, b: any) => (a.status === "Closed" ? 1 : -1));
-      setPostings(formatted);
-    } catch (error) { 
-      toast.error("Məlumatları yükləmək mümkün olmadı");
-    } finally { 
-      setLoading(false); 
-    }
+      setPostings(data.sort((a: any, b: any) => (a.status === "Closed" ? 1 : -1)));
+    } catch (error) { toast.error("Data load failed"); } finally { setLoading(false); }
   };
-
-  const resetFilters = () => {
-    setSearchQuery("");
-    setStatusFilter("all");
-    setPaymentFilter("all");
-    setLocationFilter("all");
-    toast.success("Filtrlər sıfırlandı", { icon: '🔄', duration: 1500 });
-  };
-
-  const isAnyFilterActive = searchQuery !== "" || statusFilter !== "all" || paymentFilter !== "all" || locationFilter !== "all";
 
   const filteredPostings = useMemo(() => {
     return postings.filter((item) => {
       const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
       const isClosed = item.status === "Closed" || item.status === "Inactive";
       const matchesStatus = statusFilter === "all" ? true : statusFilter === "active" ? !isClosed : isClosed;
-      const matchesPayment = paymentFilter === "all" ? true : paymentFilter === "paid" ? item.isPaid === true : item.isPaid === false;
+      const matchesPayment = paymentFilter === "all" ? true : paymentFilter === "paid" ? item.isPaid : !item.isPaid;
       const matchesLocation = locationFilter === "all" ? true : item.locationType === Number(locationFilter);
       return matchesSearch && matchesStatus && matchesPayment && matchesLocation;
     });
@@ -224,115 +177,84 @@ const Page = () => {
   const handleStatusToggle = async (id: number, currentStatus: string) => {
     const isClosed = currentStatus === "Closed" || currentStatus === "Inactive";
     const promise = isClosed ? reopenInternship(id) : closeInternship(id);
-    toast.promise(promise, { loading: 'Status yenilənir...', success: isClosed ? 'Elan yenidən aktiv edildi!' : 'Elan uğurla bağlandı!', error: (err) => err.response?.data?.message || 'Xəta baş verdi' });
-    try { await promise; fetchData(); setSelectedInternship(null); } catch (e) {}
+    await toast.promise(promise, { loading: 'Updating...', success: 'Status updated!', error: 'Error' });
+    fetchData();
+    setSelectedInternship(null);
   };
 
   const handleUpdate = async () => {
-    if (!selectedInternship?.id) return;
-    const updateData = {
-      title: selectedInternship.title?.trim() || "",
-      description: selectedInternship.description?.trim() || "",
-      isPaid: selectedInternship.isPaid ?? true,
-      locationType: Number(selectedInternship.locationType) || 0,
-      startDate: selectedInternship.startDate || new Date().toISOString(),
-      endDate: selectedInternship.endDate || new Date().toISOString(),
-      deadlineDate: selectedInternship.deadlineDate || new Date().toISOString(),
-      departmentId: Number(selectedInternship.departmentId) || 1,
-      skillIds: selectedInternship.skillIds?.length ? selectedInternship.skillIds.map(Number) : [],
-    };
-    const promise = updateInternship(selectedInternship.id, updateData);
-    toast.promise(promise, { loading: 'Yenilənir...', success: 'Uğurla yeniləndi!', error: (err) => err.response?.data?.message || 'Xəta' });
-    try { await promise; setSelectedInternship(null); fetchData(); } catch (e) {}
+    if (!selectedInternship) return;
+    const promise = updateInternship(selectedInternship.id, selectedInternship);
+    await toast.promise(promise, { loading: 'Saving...', success: 'Success!', error: 'Error' });
+    setSelectedInternship(null);
+    fetchData();
   };
 
-  const handleAddSkillAction = async (id: number, skill: string) => {
-    const promise = addSkillToInternship(id, skill);
-    toast.promise(promise, {
-      loading: 'Bacarıq əlavə edilir...',
-      success: `'${skill}' uğurla əlavə edildi!`,
-      error: 'Bacarıq əlavə olunarkən xəta baş verdi'
-    });
-    try { await promise; fetchData(); } catch (e) {}
-  }
-
-  const handleViewAction = async (id: number) => {
-    try {
-        const data = await getInternshipById(id);
-        setSelectedInternship({ ...data, id, skills: data.skills || [] });
-        toast.success("Redaktə paneli açıldı", { duration: 1000, icon: '📝' });
-    } catch (e) {
-        toast.error("Məlumat gətirilərkən xəta baş verdi");
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-[#FAFBFF] p-6 md:p-12 font-sans text-slate-900">
-      <Toaster position="top-right" />
+    <div className="min-h-screen  selection:bg-indigo-100 selection:text-indigo-700">
+      <Toaster position="bottom-center" />
       
-      <div className="max-w-[1400px] mx-auto">
-        <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <h1 className="text-[40px] font-black text-slate-900 tracking-tight leading-none">Internships</h1>
-            <p className="text-slate-500 mt-3 text-lg font-medium">Manage and monitor your internship listings.</p>
-          </div>
-          <Link href="/dashboard/post" onClick={() => toast.loading("Yeni elan səhifəsinə keçilir...", { duration: 1000 })} className="flex items-center gap-2 bg-indigo-600 text-white px-7 py-4 rounded-[22px] font-bold hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 w-fit">
-            <Plus size={20} strokeWidth={3} /> Create New
-          </Link>
-        </header>
-
-        {/* Filters Section */}
-        <div className="mb-10 bg-white p-2 rounded-[35px] shadow-[0_20px_50px_rgba(0,0,0,0.03)] border border-slate-100 flex flex-col lg:flex-row items-center gap-2">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-            <input 
-              type="text" 
-              placeholder="Search by title..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-14 pr-6 py-5 bg-transparent rounded-[30px] outline-none text-slate-700 font-medium placeholder:text-slate-400 focus:bg-slate-50/50 transition-all"
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 p-2 w-full lg:w-auto">
-            {/* Custom Select Wrapper */}
-            {[
-              { label: 'Status', val: statusFilter, set: setStatusFilter, opt: [{l:'All Status',v:'all'}, {l:'Active',v:'active'}, {l:'Closed',v:'closed'}] },
-              { label: 'Ödəniş', val: paymentFilter, set: setPaymentFilter, opt: [{l:'All Payment',v:'all'}, {l:'Paid',v:'paid'}, {l:'Unpaid',v:'unpaid'}] },
-              { label: 'Məkan', val: locationFilter, set: setLocationFilter, opt: [{l:'All Location',v:'all'}, {l:'On-site',v:'0'}, {l:'Remote',v:'1'}, {l:'Hybrid',v:'2'}] }
-            ].map((f, i) => (
-              <div key={i} className="relative group flex-1 lg:flex-none min-w-[140px]">
-                <select 
-                  value={f.val} 
-                  onChange={(e) => {
-                    f.set(e.target.value);
-                    toast.success(`${f.label} filtri yeniləndi`, { duration: 800 });
-                  }}
-                  className="w-full appearance-none bg-slate-50 border border-slate-100 py-3.5 px-5 pr-10 rounded-2xl text-sm font-bold text-slate-600 outline-none cursor-pointer hover:bg-slate-100 hover:border-slate-200 transition-all focus:ring-2 focus:ring-indigo-100"
-                >
-                  {f.opt.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
-                </select>
-                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-hover:text-slate-600 transition-colors" />
+      {/* Header Section */}
+      <div className=" border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-indigo-600 font-black text-[10px] uppercase tracking-[0.2em] mb-2">
+                <Sparkles size={14} className="fill-indigo-600" />
+                Recruitment Dashboard
               </div>
-            ))}
+              <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Active Listings</h1>
+              <p className="text-slate-400 font-medium text-lg">You have {postings.length} total internship postings.</p>
+            </div>
+            
+            <button onClick={() => router.push("/dashboard/post")} className="flex items-center gap-3 bg-indigo-600 text-white px-8 py-4 rounded-[24px] font-black text-sm uppercase tracking-wider hover:bg-slate-900 transition-all shadow-xl shadow-indigo-100 active:scale-95">
+              <Plus size={20} strokeWidth={3} /> Post New Role
+            </button>
+          </div>
 
-            {/* Reset Button */}
-            {isAnyFilterActive && (
-              <button 
-                onClick={resetFilters}
-                className="flex items-center gap-2 px-5 py-3.5 bg-orange-50 text-orange-600 rounded-2xl font-bold text-sm hover:bg-orange-100 transition-all animate-in fade-in zoom-in duration-300"
-              >
-                <RotateCcw size={16} /> Reset
-              </button>
-            )}
+          {/* Sub-Header: Filters & Search */}
+          <div className="mt-12 flex flex-col lg:flex-row gap-4">
+            <div className="relative flex-[2]">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" size={20} />
+              <input 
+                type="text" 
+                placeholder="Search by title, role or department..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-16 pr-6 py-5 bg-slate-50 border border-slate-100 rounded-[28px] outline-none text-slate-700 font-bold placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-indigo-50/50 transition-all"
+              />
+            </div>
+            
+            <div className="flex flex-1 items-center gap-3">
+              <div className="flex-1 relative group">
+                <select 
+                  value={statusFilter} 
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full appearance-none bg-white border border-slate-200 py-5 px-8 rounded-[28px] text-xs font-black uppercase tracking-widest text-slate-600 outline-none cursor-pointer hover:border-indigo-200 transition-all shadow-sm"
+                >
+                  <option value="all">Status: All</option>
+                  <option value="active">Status: Active</option>
+                  <option value="closed">Status: Closed</option>
+                </select>
+                <ChevronDown size={16} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              </div>
+
+              {(searchQuery || statusFilter !== "all") && (
+                <button onClick={() => { setSearchQuery(""); setStatusFilter("all"); }} className="p-5 bg-indigo-50 text-indigo-600 rounded-[28px] hover:bg-indigo-100 transition-all">
+                  <RotateCcw size={20} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Content Grid */}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-12">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-40 gap-4">
-             <div className="w-12 h-12 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-             <p className="text-slate-400 font-bold tracking-wide">Fetching data...</p>
+          <div className="flex flex-col items-center justify-center py-40">
+            <div className="w-10 h-10 border-[3px] border-indigo-100 border-t-indigo-600 rounded-full animate-spin mb-4" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Syncing Database</span>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -340,100 +262,116 @@ const Page = () => {
               filteredPostings.map(item => (
                 <InternshipCard 
                   key={item.id} {...item} 
-                  onDeleteRequest={(id) => {
-                    setDeleteTargetId(id);
-                    toast("Silmək üçün təsdiq gözlənilir", { icon: '⚠️' });
-                  }} 
-                  onAddSkill={handleAddSkillAction} 
-                  onView={handleViewAction}
+                  onDeleteRequest={setDeleteTargetId}
+                  onAddSkill={async (id: number, s: string) => { await addSkillToInternship(id, s); fetchData(); }}
+                  onView={async (id: number) => { const d = await getInternshipById(id); setSelectedInternship({ ...d, id }); }}
                   onToggleStatus={handleStatusToggle}
                 />
               ))
             ) : (
-              <div className="col-span-full text-center py-24 bg-white rounded-[50px] border-2 border-dashed border-slate-100 shadow-inner">
-                <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Search size={32} className="text-slate-300" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">No matches found</h3>
-                <p className="text-slate-400 mt-2 max-w-xs mx-auto">Try adjusting your filters or search terms to find what you're looking for.</p>
-                <button onClick={resetFilters} className="mt-6 text-indigo-600 font-bold hover:underline">Clear all filters</button>
+              <div className="col-span-full text-center py-32 bg-white rounded-[40px] border border-dashed border-slate-200">
+                <Search size={48} className="text-slate-200 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-slate-900">No postings match your search</h3>
+                <p className="text-slate-400 mt-1 mb-6">Try refining your filters or create a new listing.</p>
+                <button onClick={() => { setSearchQuery(""); setStatusFilter("all"); }} className="text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline">Clear all filters</button>
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
-      {deleteTargetId && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-[70] p-4">
-          <div className="bg-white rounded-[35px] p-10 w-full max-w-md shadow-2xl scale-in-center">
-            <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-red-500 rotate-12 group-hover:rotate-0 transition-transform">
-              <Trash2 size={36} />
-            </div>
-            <h2 className="text-2xl font-black text-slate-900 mb-3 text-center">Delete Listing?</h2>
-            <p className="text-slate-500 mb-10 text-center leading-relaxed font-medium">This action is permanent. All associated applicant data will be removed from the system.</p>
-            <div className="flex gap-4">
-              <button onClick={() => {
-                setDeleteTargetId(null);
-                toast.dismiss();
-              }} className="flex-1 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-all">Cancel</button>
-              <button onClick={async () => { 
-                const promise = deleteInternship(deleteTargetId);
-                toast.promise(promise, { loading: 'Silinir...', success: 'Uğurla silindi!', error: 'Silinmə zamanı xəta' });
-                await promise; 
-                fetchData(); 
-                setDeleteTargetId(null); 
-              }} className="flex-1 py-4 bg-red-500 text-white font-bold rounded-2xl hover:bg-red-600 transition-all shadow-lg shadow-red-100">Confirm Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modals - Edit & Delete (Simplified for brevity but kept functional) */}
+      <AnimatePresence>
+        {selectedInternship && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-6 overflow-y-auto">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-[48px] p-10 w-full max-w-2xl shadow-2xl relative"
+            >
+              <button onClick={() => setSelectedInternship(null)} className="absolute top-8 right-8 p-3 bg-slate-50 text-slate-400 hover:text-slate-900 rounded-2xl transition-all">
+                <X size={20} />
+              </button>
+              
+              <div className="mb-10">
+                <h2 className="text-3xl font-black text-slate-900 tracking-tight">Modify Placement</h2>
+                <p className="text-slate-400 font-medium">Update the core details of this internship role.</p>
+              </div>
 
-      {selectedInternship && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-[45px] p-12 w-full max-w-2xl shadow-2xl relative my-auto">
-             <button onClick={() => {
-                setSelectedInternship(null);
-                toast.success("Dəyişikliklər ləğv edildi", { icon: '🚫' });
-             }} className="absolute top-10 right-10 p-3 bg-slate-50 text-slate-400 hover:text-slate-900 rounded-2xl transition-all"><X size={24} /></button>
-             <h2 className="text-3xl font-black text-slate-900 mb-10 tracking-tight">Edit Posting</h2>
-             
-             <div className="space-y-6">
-                <div>
-                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-[2px] ml-1">Internship Title</label>
-                  <input value={selectedInternship.title} onChange={(e) => setSelectedInternship({...selectedInternship, title: e.target.value})} className="w-full bg-slate-50 border-2 border-transparent rounded-[22px] px-6 py-5 outline-none focus:bg-white focus:border-indigo-100 focus:ring-4 focus:ring-indigo-50/50 transition-all font-bold text-slate-700" />
-                </div>
-                <div>
-                  <label className="text-[11px] font-black text-slate-400 uppercase tracking-[2px] ml-1">Detailed Description</label>
-                  <textarea value={selectedInternship.description} onChange={(e) => setSelectedInternship({...selectedInternship, description: e.target.value})} rows={4} className="w-full bg-slate-50 border-2 border-transparent rounded-[22px] px-6 py-5 outline-none focus:bg-white focus:border-indigo-100 focus:ring-4 focus:ring-indigo-50/50 transition-all font-medium text-slate-600" />
-                </div>
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-[2px] ml-1">Application Deadline</label>
-                    <input type="date" value={selectedInternship.deadlineDate?.split('T')[0]} onChange={(e) => {
-                        setSelectedInternship({...selectedInternship, deadlineDate: e.target.value});
-                        toast("Tarix dəyişdirildi", { duration: 1000, icon: '📅' });
-                    }} className="w-full bg-slate-50 border-2 border-transparent rounded-[20px] px-6 py-4 outline-none font-bold text-slate-600" />
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Position Title</label>
+                    <input 
+                      value={selectedInternship.title} 
+                      onChange={(e) => setSelectedInternship({...selectedInternship, title: e.target.value})} 
+                      className="w-full bg-slate-50 border-2 border-transparent rounded-[24px] px-6 py-4 focus:bg-white focus:border-indigo-100 transition-all font-bold" 
+                    />
                   </div>
-                  <div className="flex items-center gap-4 p-5 bg-indigo-50/30 rounded-[20px] border-2 border-indigo-50/50 mt-4">
-                    <input type="checkbox" checked={selectedInternship.isPaid} onChange={(e) => {
-                        setSelectedInternship({...selectedInternship, isPaid: e.target.checked});
-                        toast.success(e.target.checked ? "Ödənişli təcrübə" : "Ödənişsiz təcrübə");
-                    }} className="w-6 h-6 accent-indigo-600 rounded-lg" />
-                    <label className="text-sm font-black text-indigo-900">Paid Internship</label>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Deadline Date</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-indigo-400" size={18} />
+                      <input 
+                        type="date" 
+                        value={selectedInternship.deadlineDate?.split('T')[0]} 
+                        onChange={(e) => setSelectedInternship({...selectedInternship, deadlineDate: e.target.value})} 
+                        className="w-full bg-slate-50 border-2 border-transparent rounded-[24px] pl-14 pr-6 py-4 focus:bg-white focus:border-indigo-100 transition-all font-bold text-slate-600" 
+                      />
+                    </div>
                   </div>
                 </div>
-             </div>
 
-             <div className="flex gap-4 mt-12">
-               <button onClick={() => handleStatusToggle(selectedInternship.id, selectedInternship.status || "Active")} className={`flex-1 py-5 rounded-[22px] font-black border-2 transition-all ${selectedInternship.status === "Closed" ? "border-blue-100 text-blue-600 bg-blue-50/50 hover:bg-blue-100" : "border-orange-100 text-orange-600 bg-orange-50/50 hover:bg-orange-100"}`}>
-                 {selectedInternship.status === "Closed" ? "Re-activate" : "Close Posting"}
-               </button>
-               <button onClick={handleUpdate} className="flex-[1.5] bg-indigo-600 text-white py-5 rounded-[22px] font-black hover:bg-indigo-700 shadow-2xl shadow-indigo-200 transition-all">Save All Changes</button>
-             </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Role Mission Statement</label>
+                  <textarea 
+                    value={selectedInternship.description} 
+                    onChange={(e) => setSelectedInternship({...selectedInternship, description: e.target.value})} 
+                    rows={4} 
+                    className="w-full bg-slate-50 border-2 border-transparent rounded-[24px] px-6 py-4 focus:bg-white focus:border-indigo-100 transition-all font-medium text-slate-600 resize-none" 
+                  />
+                </div>
+
+                <div className="flex items-center gap-6 p-6 bg-indigo-50/50 rounded-[30px] border-2 border-white shadow-sm">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${selectedInternship.isPaid ? "bg-indigo-600 text-white" : "bg-slate-200 text-slate-500"}`}>
+                    <DollarSign size={20} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-black text-slate-900">Financial Compensation</p>
+                    <p className="text-xs font-medium text-slate-400">Is this a paid internship position?</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked={selectedInternship.isPaid} onChange={(e) => setSelectedInternship({...selectedInternship, isPaid: e.target.checked})} className="sr-only peer"/>
+                    <div className="w-14 h-8 bg-slate-200 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:after:translate-x-6 shadow-sm"></div>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex gap-4 mt-10">
+                <button onClick={() => setSelectedInternship(null)} className="flex-1 py-5 rounded-[24px] font-black text-xs uppercase tracking-widest text-slate-500 bg-slate-50 hover:bg-slate-100 transition-all">Cancel</button>
+                <button onClick={handleUpdate} className="flex-[2] py-5 bg-indigo-600 text-white rounded-[24px] font-black text-xs uppercase tracking-widest hover:bg-slate-900 shadow-xl shadow-indigo-100 transition-all">Apply Changes</button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+
+        {deleteTargetId && (
+          <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[110] p-6">
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="bg-white rounded-[40px] p-10 w-full max-w-sm text-center">
+              <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <Trash2 size={32} />
+              </div>
+              <h2 className="text-2xl font-black text-slate-900 mb-2">Are you sure?</h2>
+              <p className="text-slate-400 font-medium mb-8">This will permanently delete the listing and all applicant data.</p>
+              <div className="flex flex-col gap-3">
+                <button onClick={async () => { await deleteInternship(deleteTargetId); fetchData(); setDeleteTargetId(null); }} className="w-full py-4 bg-rose-500 text-white rounded-[20px] font-black text-xs uppercase tracking-widest hover:bg-rose-600 transition-all">Delete Forever</button>
+                <button onClick={() => setDeleteTargetId(null)} className="w-full py-4 bg-slate-50 text-slate-500 rounded-[20px] font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all">Keep Listing</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

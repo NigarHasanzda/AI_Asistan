@@ -27,6 +27,9 @@ const InternshipDetailsPage = () => {
   const [internship, setInternship] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
+  console.log(internship);
+  
+
   const fetchInternship = async () => {
     try {
       setLoading(true);
@@ -86,7 +89,7 @@ const InternshipDetailsPage = () => {
     <div className="min-h-screen pb-20 bg-[#F8FAFC]">
       {/* Top Navbar Header */}
       <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <button 
                 onClick={() => router.back()}
                 className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-semibold transition-all group"
@@ -101,7 +104,7 @@ const InternshipDetailsPage = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         {/* Main Header Info */}
         <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-slate-200 overflow-hidden relative">
           <div className="absolute top-0 right-0 p-8">
@@ -139,13 +142,7 @@ const InternshipDetailsPage = () => {
 
           {/* Key Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 p-6 bg-slate-50 rounded-3xl">
-            <div className="flex flex-col items-center md:items-start p-2">
-              <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Total Applicants</span>
-              <div className="flex items-center gap-2">
-                <Users size={20} className="text-indigo-500" />
-                <span className="text-2xl font-black text-slate-800">{internship.applicationCount}</span>
-              </div>
-            </div>
+ 
             <div className="flex flex-col items-center md:items-start p-2">
               <span className="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Compensation</span>
               <div className="flex items-center gap-2">

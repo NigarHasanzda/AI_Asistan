@@ -49,7 +49,7 @@ const InternshipDetailPage = () => {
         const data = await getInternshipById(Number(id));
         setInternship(data);
       } catch (err: any) {
-        setError("Məlumat yüklənərkən xəta baş verdi");
+        setError("An error occurred while loading data");
       } finally {
         setLoading(false);
       }
@@ -67,12 +67,12 @@ const InternshipDetailPage = () => {
   if (error || !internship)
     return (
       <div className="text-center py-20 text-red-500 font-medium bg-slate-50">
-        {error || "Məlumat tapılmadı"}
+        {error || "Information not found"}
       </div>
     );
 
   const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("az-AZ", {
+    new Date(dateStr).toLocaleDateString("en-US", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -88,7 +88,7 @@ const InternshipDetailPage = () => {
           className="inline-flex items-center gap-1.5 text-sm text-indigo-700 font-semibold hover:text-indigo-900 transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
-          Geri qayıt
+          Go Back
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -119,7 +119,7 @@ const InternshipDetailPage = () => {
                       : "bg-emerald-50 text-emerald-600 border border-emerald-100"
                   }`}
                 >
-                  {internship.isClosed ? "Bağlanıb" : "Aktiv"}
+                  {internship.isClosed ? "Closed" : "Active"}
                 </span>
               </div>
 
@@ -127,21 +127,21 @@ const InternshipDetailPage = () => {
               <div className="flex flex-wrap gap-3 border-t border-b border-slate-100 py-6 my-6">
                 <div className="flex items-center gap-2 bg-slate-50 px-4 py-2.5 rounded-2xl text-sm text-slate-700 border border-slate-100">
                   <Calendar className="w-4 h-4 text-indigo-600" />
-                  <span className="font-medium">Başlanğıc: {formatDate(internship.startDate)}</span>
+                  <span className="font-medium">Start: {formatDate(internship.startDate)}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-slate-50 px-4 py-2.5 rounded-2xl text-sm text-slate-700 border border-slate-100">
                   <Clock className="w-4 h-4 text-indigo-600" />
-                  <span className="font-medium">Son tarix: {formatDate(internship.deadlineDate)}</span>
+                  <span className="font-medium">Deadline: {formatDate(internship.deadlineDate)}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-slate-50 px-4 py-2.5 rounded-2xl text-sm text-slate-700 border border-slate-100">
                   <Briefcase className="w-4 h-4 text-indigo-600" />
-                  <span className="font-medium">{internship.applicationCount} müraciət</span>
+                  <span className="font-medium">{internship.applicationCount} applications</span>
                 </div>
               </div>
 
               {/* Description */}
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-slate-800 uppercase tracking-tight text-sm">Təsvir</h3>
+                <h3 className="text-lg font-bold text-slate-800 uppercase tracking-tight text-sm">Description</h3>
                 <p className="text-slate-600 leading-relaxed whitespace-pre-line text-base">
                   {internship.description}
                 </p>
@@ -151,7 +151,7 @@ const InternshipDetailPage = () => {
             {/* Skills Card */}
             <section className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
               <h3 className="text-sm font-bold text-slate-800 mb-5 uppercase tracking-tight">
-                Tələb olunan bacarıqlar
+                Required Skills
               </h3>
               <div className="flex flex-wrap gap-2.5">
                 {internship.skills.map((skill) => (
@@ -173,7 +173,7 @@ const InternshipDetailPage = () => {
               {/* Accent bar */}
               <div className="h-1.5 w-12 rounded-full bg-indigo-600 mb-6" />
 
-              <h3 className="text-sm font-bold text-slate-800 mb-6 uppercase tracking-tight">Xülasə</h3>
+              <h3 className="text-sm font-bold text-slate-800 mb-6 uppercase tracking-tight">Summary</h3>
 
               <div className="space-y-4">
 
@@ -183,7 +183,7 @@ const InternshipDetailPage = () => {
                     <div className="p-2 bg-white rounded-xl border border-slate-200 shadow-sm">
                       <DollarSign className="w-4 h-4 text-indigo-700" />
                     </div>
-                    <span className="text-sm text-slate-600 font-medium">Ödəniş statusu</span>
+                    <span className="text-sm text-slate-600 font-medium">Payment Status</span>
                   </div>
                   <span className="text-sm font-bold text-indigo-900">
                     {internship.paymentStatus}
@@ -196,10 +196,10 @@ const InternshipDetailPage = () => {
                     <div className="p-2 bg-white rounded-xl border border-slate-200 shadow-sm">
                       <CheckCircle2 className="w-4 h-4 text-indigo-700" />
                     </div>
-                    <span className="text-sm text-slate-600 font-medium">Növü</span>
+                    <span className="text-sm text-slate-600 font-medium">Type</span>
                   </div>
                   <span className="text-sm font-bold text-indigo-900">
-                    {internship.isPaid ? "Pullu Təcrübə" : "Ödənişsiz"}
+                    {internship.isPaid ? "Paid Internship" : "Unpaid"}
                   </span>
                 </div>
 
@@ -209,7 +209,7 @@ const InternshipDetailPage = () => {
                     <div className="p-2 bg-white rounded-xl border border-slate-200 shadow-sm">
                       <MapPin className="w-4 h-4 text-indigo-700" />
                     </div>
-                    <span className="text-sm text-slate-600 font-medium">Məkan növü</span>
+                    <span className="text-sm text-slate-600 font-medium">Location Type</span>
                   </div>
                   <span className="text-sm font-bold text-indigo-900">
                     {internship.locationType === 0 ? "Remote" : "On-site"}
@@ -217,7 +217,7 @@ const InternshipDetailPage = () => {
                 </div>
               </div>
 
-              {/* CTA Button */}
+              {/* CTA Button (Commented out as per original) */}
               {/* <button
                 className={`w-full mt-8 py-4 px-4 rounded-2xl font-bold text-sm transition-all duration-300 shadow-lg ${
                   internship.isClosed
@@ -226,7 +226,7 @@ const InternshipDetailPage = () => {
                 }`}
                 disabled={internship.isClosed}
               >
-                {internship.isClosed ? "Müraciət bağlanıb" : "İndi müraciət et"}
+                {internship.isClosed ? "Applications Closed" : "Apply Now"}
               </button> */}
             </div>
           </div>

@@ -38,6 +38,8 @@ const CompanyDashboard = () => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  console.log(data);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,7 +148,7 @@ const CompanyDashboard = () => {
   return (
     <div className="min-h-screen text-slate-900 font-sans selection:bg-indigo-100">
       <Toaster position="top-right" />
-      <main className="max-w-[90%] mx-auto p-6 md:p-8 space-y-10">
+      <main className="max-w-[95%] mx-auto p-4 md:p-6 space-y-10">
         <section className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-[11px] font-bold uppercase tracking-wider ${status.color}`}>

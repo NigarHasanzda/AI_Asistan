@@ -119,12 +119,8 @@ export default function CreateInternshipPage() {
         )}
       </AnimatePresence>
 
-      <div className="max-w-4xl mx-auto">
-        {/* Header Section */}
-        <div className="text-center mb-12 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-full text-xs font-black uppercase tracking-widest border border-indigo-100">
-            <Sparkles size={14} /> Recruitment Hub
-          </div>
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-10 -mt-10">
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Post an <span className="text-indigo-600">Internship</span></h1>
           <p className="text-slate-500 font-bold">Find the brightest talents for your upcoming projects.</p>
         </div>
