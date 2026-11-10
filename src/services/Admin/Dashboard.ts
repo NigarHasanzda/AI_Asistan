@@ -1,19 +1,5 @@
 import { AdminDashboardResponse } from "@/types/Admin/dashboard";
-import api from "../api";
+import api, { request } from "../api";
 
-export const getAdminDashboard = async (): Promise<AdminDashboardResponse> => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const response = await api.get("/Admin/dashboard", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Admin Dashboard Error:", error);
-    throw error;
-  }
-};
+export const getAdminDashboard = async (): Promise<AdminDashboardResponse> =>
+  request<AdminDashboardResponse>("Admin Dashboard Error:", () => api.get("/Admin/dashboard"));

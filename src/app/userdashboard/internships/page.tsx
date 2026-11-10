@@ -92,7 +92,14 @@ const InternshipHub = () => {
       await applyToInternship(id);
       addToast("Application submitted! Check your dashboard for updates. 🚀", "success");
     } catch (err: any) {
-      addToast(err.response?.data?.message || "Application failed. Please try again.", "error");
+      const status = err.response?.status;
+      const msg =
+        err.response?.data?.message ||
+        (typeof err.response?.data === "string" && err.response.data) ||
+        (status === 401 ? "Session expired. Please log in again." : null) ||
+        (status === 409 ? "You have already applied to this internship." : null) ||
+        "Application failed. Please try again.";
+      addToast(msg, "error");
     }
   };
 

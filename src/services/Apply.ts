@@ -1,154 +1,66 @@
-import api from "@/services/api";
+import api, { isBrowser, request, requireToken, JSON_HEADERS } from "@/services/api";
+
+// ---------- Applications ----------
 
 export const applyToInternship = async (internshipId: number) => {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser()) return null;
+  requireToken();
 
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
-
-  try {
-    const response = await api.post(
-      "/Applications/apply",
-      { internshipId },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Apply zamanı xəta:", error.response?.data || error.message);
-    throw error;
-  }
+  return request("Apply zamanı xəta:", () =>
+    api.post("/Applications/apply", { internshipId }, { headers: JSON_HEADERS })
+  );
 };
 
-
 export const getMyApplications = async () => {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser()) return null;
+  requireToken();
 
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
-
-  try {
-    const response = await api.get("/Applications/my-applications", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("My applications error:", error.response?.data || error.message);
-    throw error;
-  }
+  return request("My applications error:", () =>
+    api.get("/Applications/my-applications")
+  );
 };
 
 export const getApplicationById = async (id: number) => {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser()) return null;
+  requireToken();
 
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
-
-  try {
-    const response = await api.get(`/Applications/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Get application by ID error:", error.response?.data || error.message);
-    throw error;
-  }
+  return request("Get application by ID error:", () =>
+    api.get(`/Applications/${id}`)
+  );
 };
-
 
 export const withdrawApplication = async (id: number) => {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser()) return null;
+  requireToken();
 
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
-
-  try {
-    const response = await api.delete(`/Applications/${id}/withdraw`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Withdraw error:", error.response?.data || error.message);
-    throw error;
-  }
+  return request("Withdraw error:", () =>
+    api.delete(`/Applications/${id}/withdraw`)
+  );
 };
 
-
+// ---------- Bookmarks ----------
 
 export const addBookmark = async (internshipId: number) => {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser()) return null;
+  requireToken();
 
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
-
-  try {
-    const response = await api.post(
-      `/Bookmarks/${internshipId}`,
-      {}, // body boşdur
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Bookmark əlavə edilərkən xəta:", error.response?.data || error.message);
-    throw error;
-  }
+  return request("Bookmark əlavə edilərkən xəta:", () =>
+    api.post(`/Bookmarks/${internshipId}`, {})
+  );
 };
 
 export const removeBookmark = async (internshipId: number) => {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser()) return null;
+  requireToken();
 
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
-
-  try {
-    const response = await api.delete(`/Bookmarks/${internshipId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Bookmark silinərkən xəta:", error.response?.data || error.message);
-    throw error;
-  }
+  return request("Bookmark silinərkən xəta:", () =>
+    api.delete(`/Bookmarks/${internshipId}`)
+  );
 };
 
 export const getBookmarks = async () => {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser()) return null;
+  requireToken();
 
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
-
-  try {
-    const response = await api.get("/Bookmarks", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Bookmarklar alınarkən xəta:", error.response?.data || error.message);
-    throw error;
-  }
+  return request("Bookmarklar alınarkən xəta:", () => api.get("/Bookmarks"));
 };

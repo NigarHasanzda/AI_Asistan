@@ -1,36 +1,19 @@
-// services/Leaderboards.ts
-import api from "@/services/api"; // axios instance
+import api, { isBrowser, request, requireToken } from "@/services/api";
 
 export const getLeaderboards = async (targetJobId?: number) => {
-  if (typeof window === "undefined") return null;
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
+  if (!isBrowser()) return null;
+  requireToken();
 
-  try {
-    const response = await api.get("/Leaderboards", {
-      headers: { Authorization: `Bearer ${token}` },
-      params: targetJobId ? { targetJobId } : {},
-    });
-    return response.data;
-  } catch (err: any) {
-    console.error("Leaderboards alınarkən xəta:", err.response?.data || err.message);
-    throw err;
-  }
+  return request("Leaderboards alınarkən xəta:", () =>
+    api.get("/Leaderboards", { params: targetJobId ? { targetJobId } : {} })
+  );
 };
 
-// Yeni funksiyanı əlavə edirik
 export const toggleOptIn = async () => {
-  if (typeof window === "undefined") return null;
-  const token = localStorage.getItem("token");
-  if (!token) throw new Error("Token tapılmadı");
+  if (!isBrowser()) return null;
+  requireToken();
 
-  try {
-    const response = await api.patch("/Leaderboards/toggle-opt-in", null, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data; // serverdən gələn nəticəni qaytarır
-  } catch (err: any) {
-    console.error("Toggle opt-in zamanı xəta:", err.response?.data || err.message);
-    throw err;
-  }
+  return request("Toggle opt-in zamanı xəta:", () =>
+    api.patch("/Leaderboards/toggle-opt-in", null)
+  );
 };

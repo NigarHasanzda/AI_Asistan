@@ -77,7 +77,7 @@ const Page = () => {
       const token = localStorage.getItem("token");
       await api.post(
         `/MockInterviews/my-interviews/${interview.id}/submit-answer?questionOrder=${currentQuestion.order}`,
-        `"${answer}"`,
+        JSON.stringify(answer),
         { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
       );
 

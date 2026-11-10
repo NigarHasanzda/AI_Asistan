@@ -1,48 +1,26 @@
-import api from "../api";
+import api, { logApiError, request } from "../api";
 
-
+/** Admin üçün internship siyahısı. Xəta olarsa boş array qaytarır. */
 export const getAdminInternships = async (params?: { page?: number; pageSize?: number }) => {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
-    const response = await api.get("/Admin/internships", {
-      headers: { Authorization: `Bearer ${token}` },
-      params,
-    });
-    // server bəzən data obyektində ola bilər
-    return response.data || [];
-  } catch (err) {
-    console.error("Get internships error:", err);
+    const { data } = await api.get("/Admin/internships", { params });
+    return data || [];
+  } catch (error) {
+    logApiError("Get internships error:", error);
     return [];
   }
 };
 
+/** Xəta olarsa null qaytarır. */
 export const getAdminInternshipById = async (id: number) => {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
-    const response = await api.get(`/Admin/internships/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
-  } catch (err) {
-    console.error("Get internship by id error:", err);
+    const { data } = await api.get(`/Admin/internships/${id}`);
+    return data;
+  } catch (error) {
+    logApiError("Get internship by id error:", error);
     return null;
   }
 };
 
-export const deleteAdminInternship = async (id: number) => {
-  try {
-    let token = "";
-    if (typeof window !== "undefined") {
-      token = localStorage.getItem("token") || "";
-    }
-
-    const response = await api.delete(`/Admin/internships/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    return response.data;
-  } catch (err: any) {
-    console.error("Delete internship error:", err);
-    throw err;
-  }
-};
+export const deleteAdminInternship = async (id: number) =>
+  request("Delete internship error:", () => api.delete(`/Admin/internships/${id}`));

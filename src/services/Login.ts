@@ -1,26 +1,18 @@
-// services/Login.ts
 import api from "@/services/api";
 import { LoginRequest, LoginResponse } from "@/types/login";
 
-export const UserLogin = async (
-  loginData: LoginRequest
-): Promise<LoginResponse> => {
+export const UserLogin = async (loginData: LoginRequest): Promise<LoginResponse> => {
   try {
-    const response = await api.post<LoginResponse>("/Auth/login", loginData);
+    const { data } = await api.post<LoginResponse>("/Auth/login", loginData);
 
-    const { token, role } = response.data;
+    if (data.token) localStorage.setItem("token", data.token);
+    if (data.role !== undefined) localStorage.setItem("role", data.role.toString());
 
-    if (token) localStorage.setItem("token", token);
-    if (role !== undefined) localStorage.setItem("role", role.toString());
-
-    return response.data;
+    return data;
   } catch (error: any) {
-    if (error.response) {
-      throw new Error(error.response.data.message || "Login zamanı xəta baş verdi");
-    } else {
+    if (!error.response) {
       throw new Error(error.message || "Serverə qoşulmaq mümkün olmadı");
     }
+    throw new Error(error.response.data.message || "Login zamanı xəta baş verdi");
   }
 };
-
-

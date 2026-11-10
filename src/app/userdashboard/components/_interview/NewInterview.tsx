@@ -73,8 +73,7 @@ const NewInterview = () => {
         "/MockInterviews",
         { 
           mode: modeMap[mode], 
-          level: levelMap[difficulty], 
-          role: "General Software Engineer" 
+          level: levelMap[difficulty]
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );

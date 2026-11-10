@@ -19,8 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="flex min-h-fit bg-[#F8FAFC]">
+      <div className="flex min-h-screen bg-[#F8FAFC]">
         {/* Sidebar bura əlavə olunur */}
         <Sidebar />
         
@@ -32,7 +31,6 @@ export default function RootLayout({
           </main>
           <FooterWrapper />
         </div>
-      </body>
-    </html>
+      </div>
   );
 }

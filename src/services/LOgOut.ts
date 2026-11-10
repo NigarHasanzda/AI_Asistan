@@ -1,12 +1,10 @@
+import { getToken } from "@/services/api";
 import { logout } from "@/utils/logout";
 
+/** Token yoxdursa logout edib login səhifəsinə yönləndirir. */
+export const checkToken = (): boolean => {
+  if (getToken()) return true;
 
-export const checkToken = () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    logout(); // token yoxdursa logout et və login-ə yönləndir
-    return false;
-  }
-  return true;
+  logout();
+  return false;
 };
-

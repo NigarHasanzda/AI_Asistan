@@ -7,7 +7,11 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*", // frontend-də /api/ ilə çağırışlar
-        destination: "http://khalida06-001-site1.ntempurl.com/api/:path*", // remote backend
+        destination: "https://khalida06-002-site1.htempurl.com/api/:path*", // remote backend
+      },
+      {
+        source: "/uploads/:path*", // backend-dən gələn nisbi şəkil yolları
+        destination: "https://khalida06-002-site1.htempurl.com/uploads/:path*",
       },
     ];
   },

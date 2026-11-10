@@ -6,40 +6,30 @@ import {
   ResetPasswordResponse,
 } from "@/types/forgotpassword";
 
-// Forgot Password
+/** Auth xətasını istifadəçiyə göstəriləcək mesaja çevirir. */
+const toAuthError = (error: any, fallback: string): Error =>
+  error.response
+    ? new Error(error.response.data.message || fallback)
+    : new Error(error.message || "Serverə qoşulmaq mümkün olmadı");
+
 export const forgotPassword = async (
   data: ForgotPasswordRequest
 ): Promise<ForgotPasswordResponse> => {
   try {
-    const response = await api.post<ForgotPasswordResponse>(
-      "/Auth/forgot-password",
-      data
-    );
+    const response = await api.post<ForgotPasswordResponse>("/Auth/forgot-password", data);
     return response.data;
   } catch (error: any) {
-    if (error.response) {
-      throw new Error(error.response.data.message || "Email göndərərkən xəta baş verdi");
-    } else {
-      throw new Error(error.message || "Serverə qoşulmaq mümkün olmadı");
-    }
+    throw toAuthError(error, "Email göndərərkən xəta baş verdi");
   }
 };
 
-// Reset Password
 export const resetPassword = async (
   data: ResetPasswordRequest
 ): Promise<ResetPasswordResponse> => {
   try {
-    const response = await api.post<ResetPasswordResponse>(
-      "/Auth/reset-password",
-      data
-    );
+    const response = await api.post<ResetPasswordResponse>("/Auth/reset-password", data);
     return response.data;
   } catch (error: any) {
-    if (error.response) {
-      throw new Error(error.response.data.message || "Şifrə yeniləyərkən xəta baş verdi");
-    } else {
-      throw new Error(error.message || "Serverə qoşulmaq mümkün olmadı");
-    }
+    throw toAuthError(error, "Şifrə yeniləyərkən xəta baş verdi");
   }
 };

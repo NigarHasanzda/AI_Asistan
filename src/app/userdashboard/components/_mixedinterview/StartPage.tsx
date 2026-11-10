@@ -95,7 +95,7 @@ const PracticeInterviewPage = () => {
 
       await api.post(
         `/MockInterviews/my-interviews/${interview.id}/submit-answer?questionOrder=${questionOrder}`,
-        `"${answer}"`,
+        JSON.stringify(answer),
         {
           headers: {
             Authorization: `Bearer ${token}`,

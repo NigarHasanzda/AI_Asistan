@@ -1,48 +1,13 @@
-import api from "../api";
+import api, { request } from "../api";
 
-export const getAdminProfile = async () => {
-  try {
-    let token = "";
-
-    if (typeof window !== "undefined") {
-      token = localStorage.getItem("token") || "";
-    }
-
-    const response = await api.get("/Admin/profile", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Admin profile error:", error);
-    throw error;
-  }
-};
-
-
-export const updateAdminProfile = async (data: {
+export interface UpdateAdminProfileRequest {
   username: string;
   currentPassword: string;
   newPassword: string;
-}) => {
-  try {
-    let token = "";
+}
 
-    if (typeof window !== "undefined") {
-      token = localStorage.getItem("token") || "";
-    }
+export const getAdminProfile = async () =>
+  request("Admin profile error:", () => api.get("/Admin/profile"));
 
-    const response = await api.patch("/Admin/profile", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data;
-  } catch (error: any) {
-    console.error("Update profile error:", error);
-    throw error;
-  }
-};
+export const updateAdminProfile = async (data: UpdateAdminProfileRequest) =>
+  request("Update profile error:", () => api.patch("/Admin/profile", data));

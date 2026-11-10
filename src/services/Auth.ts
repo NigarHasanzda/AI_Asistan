@@ -1,32 +1,24 @@
-
-import api from "@/services/api";
+import api, { requireToken } from "@/services/api";
 import { RegisterErrorResponse, RegisterRequest, RegisterSuccessResponse } from "@/types/register";
 import { jwtDecode } from "jwt-decode";
 
-
+const CONNECTION_ERROR = "Serverə qoşulmaq mümkün olmadı";
 
 export const UserRegister = async (
   userData: RegisterRequest
 ): Promise<RegisterSuccessResponse> => {
   try {
-    const response = await api.post<RegisterSuccessResponse>(
-      "/Auth/register",
-      userData
-    );
-    return response.data;
+    const { data } = await api.post<RegisterSuccessResponse>("/Auth/register", userData);
+    return data;
   } catch (error: any) {
-    if (error.response) {
-      const errData: RegisterErrorResponse = error.response.data;
+    if (!error.response) throw new Error(error.message || CONNECTION_ERROR);
 
-      const message =
-        errData?.title ||
-        Object.values(errData?.errors || {})?.flat()?.[0] ||
-        "Qeydiyyat zamanı xəta baş verdi";
+    const errData: RegisterErrorResponse = error.response.data;
+    const firstFieldError = Object.values(errData?.errors || {})?.flat()?.[0];
 
-      throw new Error(message);
-    } else {
-      throw new Error(error.message || "Serverə qoşulmaq mümkün olmadı");
-    }
+    throw new Error(
+      errData?.title || firstFieldError || "Qeydiyyat zamanı xəta baş verdi"
+    );
   }
 };
 
@@ -36,38 +28,21 @@ interface DecodedToken {
 
 export const isTokenExpired = (token: string): boolean => {
   try {
-    const decoded: DecodedToken = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
-
-    return decoded.exp < currentTime;
-  } catch (error) {
+    const { exp } = jwtDecode<DecodedToken>(token);
+    return exp < Date.now() / 1000;
+  } catch {
     return true;
   }
 };
 
-
 export const deleteAccount = async (): Promise<string> => {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    throw new Error("Token tapılmadı");
-  }
+  requireToken();
 
   try {
-    const response = await api.delete("/Auth/delete-account", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    return response.data || "Hesab uğurla silindi";
+    const { data } = await api.delete("/Auth/delete-account");
+    return data || "Hesab uğurla silindi";
   } catch (error: any) {
-    if (error.response) {
-      throw new Error(
-        error.response.data?.message || "Hesab silinərkən xəta baş verdi"
-      );
-    } else {
-      throw new Error("Serverə qoşulmaq mümkün olmadı");
-    }
+    if (!error.response) throw new Error(CONNECTION_ERROR);
+    throw new Error(error.response.data?.message || "Hesab silinərkən xəta baş verdi");
   }
 };
